@@ -205,11 +205,12 @@ class NextflowTool {
         String.format(
             """\n
             ${dashedLine(monochrome_logs)}
-            ${colors.blue} _____________________  ___     ____________   _________________ ${colors.reset}
-            ${colors.blue} ___  __ \\__    |__   |/  /     ____  _/__  | / /__  ____/_  __ \\ ${colors.reset}
-            ${colors.blue} __  /_/ /_  /| |_  /|_/ /_________  / __   |/ /__  /_   _  / / / ${colors.reset}
-            ${colors.blue} _  ____/_  ___ |  /  / /_/_____/_/ /  _  /|  / _  __/   / /_/ / ${colors.reset}
-            ${colors.blue} /_/     /_/  |_/_/  /_/        /___/  /_/ |_/  /_/      \\____/ ${colors.reset}                                         
+            ${colors.blue} ██████╗ ██╗   ██╗██╗ ${colors.reset}
+            ${colors.blue} ██╔══██╗██║   ██║██║ ${colors.reset}
+            ${colors.blue} ██████╔╝██║   ██║██║ ${colors.reset}
+            ${colors.blue} ██╔══██╗╚██╗ ██╔╝██║ ${colors.reset}
+            ${colors.blue} ██║  ██║ ╚████╔╝ ██║ ${colors.reset}
+            ${colors.blue} ╚═╝  ╚═╝  ╚═══╝  ╚═╝ ${colors.reset}
             \n
             ${colors.purple}  ${workflow.manifest.name} ${workflow.manifest.version} ${colors.reset}
             ${dashedLine(monochrome_logs)}
