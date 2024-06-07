@@ -4,7 +4,7 @@ process BATON {
     label 'time_30m'
     maxForks = 10
 
-    container "/data/pam/installs/images/baton.simg"
+    //container "/data/pam/installs/images/baton.simg"
     
     input:
     path(json_file)
