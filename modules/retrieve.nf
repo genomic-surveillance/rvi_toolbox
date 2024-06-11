@@ -4,7 +4,7 @@ process RETRIEVE_CRAM {
     label 'time_30m'
 
     //using the singularity image below the ISG/experiemntal/irods/4.3.0 module
-    container '/software/isg/private/experimental/irods/4.3.0/lib/4.3.0_135981_feat-inital.sif'
+    //container '/software/isg/private/experimental/irods/4.3.0/lib/4.3.0_135981_feat-inital.sif'
 
     input:
     tuple val(meta), val(cram_path)
