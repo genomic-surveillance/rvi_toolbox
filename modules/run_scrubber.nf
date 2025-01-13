@@ -3,6 +3,7 @@ process run_sra_human_scrubber {
     label "rsa_human_scrubber"
     publishDir "${params.results_dir}/${meta.id}/preprocessing/", mode: "copy"
 
+    container "quay.io/gsu-pipelines/rvi-pp-sra-human-scrubber:v1.0"
     input:
         tuple val(meta), path(fastq_1), path(fastq_2)
 

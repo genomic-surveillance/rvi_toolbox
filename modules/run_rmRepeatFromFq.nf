@@ -1,6 +1,7 @@
 process run_rmRepeatFromFq {
     tag "${meta.id}"
     publishDir "${params.results_dir}/${meta.id}/preprocessing/", mode: "copy", pattern:"*.trf"
+    container "quay.io/gsu-pipelines/rvi-vp-basecontainer"
 
     input:
         tuple val(meta), path(fastq_1), path(fastq_2), path(trf_out_1), path(trf_out_2)

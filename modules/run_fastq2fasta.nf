@@ -33,6 +33,7 @@ process run_fastq2fasta {
     * --------------------------------------------------------------
     */
     tag {meta.id}
+    container "quay.io/gsu-pipelines/rvi-vp-basecontainer"
 
     input:
         tuple val(meta), path(fastq_1), path(fastq_2) 
