@@ -8,18 +8,7 @@ workflow PREPROCESSING {
     /*
     -----------------------------------------------------------------
     Preprocessing fastq files
-
-
     -----------------------------------------------------------------
-    # Inputs
-    - **Sample Taxid Channel **: A channel containing tuples of 
-
-    -----------------------------------------------------------------
-    # Key Processes
-
-    -----------------------------------------------------------------
-    # Outputs
-    - `run_ivar.out`: A channel containing tuples of metadata and the generated consensus FASTA file.
 
     */
 
