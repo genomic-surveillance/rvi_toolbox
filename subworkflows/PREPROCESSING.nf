@@ -54,8 +54,8 @@ workflow PREPROCESSING {
                 | set {reads_ch} // tuple (meta, trf_fq_1, trf_fq_2)
         }
 
-        // run human-sra-scrubble
-        if (params.run_scrubble){
+        // run human-sra-scrubber
+        if (params.run_scrubber){
             run_sra_human_scrubber(reads_ch)
             reads_ch = run_sra_human_scrubber.out
         }

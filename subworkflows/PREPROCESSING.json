@@ -33,8 +33,8 @@
                 "help_text": "TRF command line options"
             }
         },
-        "Scrubble Options": {
-            "run_scrubble": {
+        "scrubber Options": {
+            "run_scrubber": {
                 "default": "true",
                 "help_text": "Run RSA-Human-Scrubble"
             }
