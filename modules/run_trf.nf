@@ -5,7 +5,8 @@ process run_trf {
     tag "${meta.id}"
     label 'mem_1'
     label 'time_1'
-    label "trf"
+
+    container "quay.io/biocontainers/trf:4.09.1--h031d066_6"
 
     input:
     tuple val(meta), path(fasta_R1), path(fasta_R2)

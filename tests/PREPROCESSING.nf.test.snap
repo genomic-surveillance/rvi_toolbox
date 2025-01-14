@@ -1,0 +1,35 @@
+{
+    "Should run without failures": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "FluH1N1_SARSCoV2_hPIV1_33K_ea_P1"
+                        },
+                        [
+                            "FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_1_clean.fastq:md5,d5be190fb01a4c22a7a6f5e2ce9db162",
+                            "FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_2_clean.fastq:md5,c68aa5a6e2f3c4434beafae689cb0428"
+                        ]
+                    ]
+                ],
+                "out_ch": [
+                    [
+                        {
+                            "id": "FluH1N1_SARSCoV2_hPIV1_33K_ea_P1"
+                        },
+                        [
+                            "FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_1_clean.fastq:md5,d5be190fb01a4c22a7a6f5e2ce9db162",
+                            "FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_2_clean.fastq:md5,c68aa5a6e2f3c4434beafae689cb0428"
+                        ]
+                    ]
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "24.10.3"
+        },
+        "timestamp": "2025-01-14T13:47:57.879083"
+    }
+}

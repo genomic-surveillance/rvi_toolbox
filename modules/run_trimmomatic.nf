@@ -10,7 +10,9 @@ process run_trimmomatic {
     label 'mem_1'
     label 'time_1'
     cpus params.trimmomatic_threads
-    label "trimmomatic"
+
+    container "quay.io/biocontainers/trimmomatic:0.39--1"
+
     // publish only the gz version
     publishDir enabled: params.publish_trimmed_reads, mode: 'symlink', failOnError: true, pattern: "${output_1}.gz", path: "${params.results_dir}/${meta.id}/trimmed_reads/"
     publishDir enabled: params.publish_trimmed_reads, mode: 'symlink', failOnError: true, pattern: "${output_2}.gz", path: "${params.results_dir}/${meta.id}/trimmed_reads/"

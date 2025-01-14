@@ -1,3 +1,6 @@
+params.script_src_path="${projectDir}/rvi_toolbox/bin/" 
+
+
 process run_fastq2fasta {
     /*
     *             Process: fastq_to_fasta
@@ -43,7 +46,7 @@ process run_fastq2fasta {
 
     script:
     """
-    ${projectDir}/rvi_toolbox/bin/fastq2fasta.py ${fastq_1} -o ${meta.id}_1.fasta
-    ${projectDir}/rvi_toolbox/bin/fastq2fasta.py ${fastq_2} -o ${meta.id}_2.fasta
+    ${params.script_src_path}fastq2fasta.py ${fastq_1} -o ${meta.id}_1.fasta
+    ${params.script_src_path}fastq2fasta.py ${fastq_2} -o ${meta.id}_2.fasta
     """
 }

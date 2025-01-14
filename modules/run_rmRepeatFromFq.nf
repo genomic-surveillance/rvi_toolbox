@@ -1,3 +1,10 @@
+// this default script path should work out of the box on any pipeline.
+params.script_src_path="${projectDir}/rvi_toolbox/bin/" 
+
+// NOTE: the main reason this param was added is to allow to run tests under
+//       rvi_toolbox dir
+
+
 process run_rmRepeatFromFq {
     tag "${meta.id}"
     publishDir "${params.results_dir}/${meta.id}/preprocessing/", mode: "copy", pattern:"*.trf"
@@ -12,8 +19,8 @@ process run_rmRepeatFromFq {
 
     script:
     """
-    ${projectDir}/rvi_toolbox/bin/trfCombine.py --trf1 ${trf_out_1} --trf2 ${trf_out_2} -o combined.trf -u unpaired.trf
-    ${projectDir}/rvi_toolbox/bin/rmRepeatFromFq.py -i ${fastq_1} -t combined.trf -o ${meta.id}_trf_1.fastq
-    ${projectDir}/rvi_toolbox/bin/rmRepeatFromFq.py -i ${fastq_2} -t combined.trf -o ${meta.id}_trf_2.fastq
+    ${params.script_src_path}trfCombine.py --trf1 ${trf_out_1} --trf2 ${trf_out_2} -o combined.trf -u unpaired.trf
+    ${params.script_src_path}rmRepeatFromFq.py -i ${fastq_1} -t combined.trf -o ${meta.id}_trf_1.fastq
+    ${params.script_src_path}rmRepeatFromFq.py -i ${fastq_2} -t combined.trf -o ${meta.id}_trf_2.fastq
     """
 }
