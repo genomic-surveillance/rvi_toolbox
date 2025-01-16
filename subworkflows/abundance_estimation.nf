@@ -20,12 +20,12 @@ CONVERTED FOR SUBWORKFLOW PURPOSES
 //
 // MODULES
 //
-include { CLEANUP_SORTED_BAM_FILES; CLEANUP_TRIMMED_FASTQ_FILES; CLEANUP_INSTRAIN_OUTPUT } from '../modules/abundance_estimation/cleanup.nf'
-include { MERGE_FASTQS } from '../modules/abundance_estimation/merge_fastq.nf'
-include { SOURMASH_SKETCH; SOURMASH_GATHER } from '../modules/abundance_estimation/sourmash.nf'
-include { SUBSET_GTDB } from '../modules/abundance_estimation/subset_fasta.nf'
-include { BOWTIE_INDEX; BOWTIE2SAMTOOLS; GET_OVERALL_MAPPING_RATE } from '../modules/abundance_estimation/bowtie.nf'
-include { GENERATE_STB; INSTRAIN_PROFILE; INSTRAIN_QUICKPROFILE; GENERATE_INSTRAIN_SUMMARY } from '../modules/abundance_estimation/instrain.nf'
+include { CLEANUP_SORTED_BAM_FILES; CLEANUP_TRIMMED_FASTQ_FILES; CLEANUP_INSTRAIN_OUTPUT } from '../modules/cleanup.nf'
+include { MERGE_FASTQS } from '../modules/merge_fastq.nf'
+include { SOURMASH_SKETCH; SOURMASH_GATHER } from '../modules/sourmash.nf'
+include { SUBSET_GTDB } from '../modules/subset_fasta.nf'
+include { BOWTIE_INDEX; BOWTIE2SAMTOOLS; GET_OVERALL_MAPPING_RATE } from '../modules/bowtie.nf'
+include { GENERATE_STB; INSTRAIN_PROFILE; INSTRAIN_QUICKPROFILE; GENERATE_INSTRAIN_SUMMARY } from '../modules/instrain.nf'
 
 /*
 ========================================================================================
