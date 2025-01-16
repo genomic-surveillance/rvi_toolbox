@@ -32,7 +32,7 @@ workflow MIXED_INPUT {
 
     if ('IRODS' in active_workflows) {
         COMBINE_IRODS
-        | IRODS_EXTRACTOR
+        | DOWNLOAD_FROM_IRODS
         | set { reads_from_irods_ch }
     } else {
         Channel.of("none")
