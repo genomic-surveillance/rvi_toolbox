@@ -38,12 +38,7 @@ workflow ABUNDANCE_ESTIMATION{
     fastq_path_ch        // tuple( meta, read_1, read_2 )
 
     main:
-    if (params.skip_qc_abundance_estimation) {
-        MERGE_FASTQS(fastq_path_ch)
-    } else {
-        METAWRAP_QC(fastq_path_ch)
-        | MERGE_FASTQS()
-    }
+    MERGE_FASTQS(fastq_path_ch)
 
     if (params.sourmash_subset_abundance_estimation) {
 
@@ -75,9 +70,7 @@ workflow ABUNDANCE_ESTIMATION{
     BOWTIE2SAMTOOLS(bowtie_mapping_ch, params.bowtie2_samtools_threads_abundance_estimation)
 
     if (params.cleanup_intermediate_files_abundance_estimation) {
-        if (!params.skip_qc_abundance_estimation) {
-            CLEANUP_TRIMMED_FASTQ_FILES(BOWTIE2SAMTOOLS.out.trimmed_fastqs)
-        }
+        CLEANUP_TRIMMED_FASTQ_FILES(BOWTIE2SAMTOOLS.out.trimmed_fastqs)
     }
 
     GET_OVERALL_MAPPING_RATE(BOWTIE2SAMTOOLS.out.map_rate_ch.collect())
