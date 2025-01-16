@@ -27,6 +27,11 @@ include { SUBSET_GTDB } from '../modules/abundance_estimation/subset_fasta.nf'
 include { BOWTIE_INDEX; BOWTIE2SAMTOOLS; GET_OVERALL_MAPPING_RATE } from '../modules/abundance_estimation/bowtie.nf'
 include { GENERATE_STB; INSTRAIN_PROFILE; INSTRAIN_QUICKPROFILE; GENERATE_INSTRAIN_SUMMARY } from '../modules/abundance_estimation/instrain.nf'
 
+//
+// SUBWORKFLOWS
+//
+include { METAWRAP_QC } from './metawrap_qc.nf'
+
 /*
 ========================================================================================
     RUN MAIN WORKFLOW
@@ -71,8 +76,13 @@ workflow ABUNDANCE_ESTIMATION{
         stb_channel = Channel.fromPath("${params.stb_file_abundance_estimation}")
     }
 
-    fastq_path_ch.combine(index_channel).set{ bowtie_mapping_ch }
-    BOWTIE2SAMTOOLS(bowtie_mapping_ch, params.bowtie2_samtools_threads_abundance_estimation)
+    if (params.skip_qc_abundance_estimation) {
+        fastq_path_ch.combine(index_channel).set{ bowtie_mapping_ch }
+        BOWTIE2SAMTOOLS(bowtie_mapping_ch, params.bowtie2_samtools_threads_abundance_estimation)
+    } else {
+        bowtie_mapping_ch = METAWRAP_QC.out.filtered_reads.join(index_channel)
+        BOWTIE2SAMTOOLS(bowtie_mapping_ch, params.bowtie2_samtools_threads_abundance_estimation)
+    }
 
     if (params.cleanup_intermediate_files_abundance_estimation) {
         if (!params.skip_qc_abundance_estimation) {
