@@ -10,7 +10,7 @@ nextflow_workflow {
             params {
                 run_trimmomatic = true
                 run_trf = true
-                run_scrubber = true
+                run_hrr = true
                 meta = [
                     id: "FluH1N1_SARSCoV2_hPIV1_33K_ea_P1",
                 ]
