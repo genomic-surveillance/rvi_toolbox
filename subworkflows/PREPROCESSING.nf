@@ -93,3 +93,40 @@ workflow {
     mnf_ch = parse_mnf_meta(params.preprocessing_mnf)
     PREPROCESSING(mnf_ch)
 }
+
+def check_preprocessing_params(){
+    /*
+    -----------------------------------------------------------------
+    Checks for necessary parameters and validates paths to ensure 
+    they exist. Logs errors if any required parameters are missing.
+    -----------------------------------------------------------------
+
+    - **Output**: Number of errors encountered during the checks.
+
+    -----------------------------------------------------------------
+
+    */
+    def errors = 0
+    // was the kraken database provided?
+    if (params.adapter_fasta == null){
+        log.error("No adapter_fasta path provided")
+        errors +=1
+    }
+
+    // if yes, is it a file which exists?
+    if (params.adapter_fasta){
+        adapter_fasta = file(params.adapter_fasta)
+        if (!adapter_fasta.exists()){
+            log.error("The adapter_fasta provided (${params.adapter_fasta}) does not exist.")
+            errors += 1
+        }
+    }
+
+    // check switchs
+
+    if ((params.run_trimmomatic == false) && (params.run_trf == false) && (params.run_hrr == false)){
+        log.error("All PREPROCESSING process switchs are off (run_trimmomatic = ${params.run_trimmomatic}; run_trf = ${params.run_trf} ; run_hrr = ${params.run_hrr}).")
+    }
+
+    return errors
+}
