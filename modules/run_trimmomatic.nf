@@ -14,8 +14,8 @@ process run_trimmomatic {
     container "quay.io/biocontainers/trimmomatic:0.39--1"
 
     // publish only the gz version
-    publishDir enabled: params.publish_trimmed_reads, mode: 'symlink', failOnError: true, pattern: "${output_1}.gz", path: "${params.results_dir}/${meta.id}/preprocessing/trimmed_reads/"
-    publishDir enabled: params.publish_trimmed_reads, mode: 'symlink', failOnError: true, pattern: "${output_2}.gz", path: "${params.results_dir}/${meta.id}/preprocessing/trimmed_reads/"
+    publishDir enabled: params.publish_trimmed_reads, mode: 'symlink', failOnError: true, pattern: "${output_1}.gz", path: "${params.outdir}/${meta.id}/preprocessing/trimmed_reads/"
+    publishDir enabled: params.publish_trimmed_reads, mode: 'symlink', failOnError: true, pattern: "${output_2}.gz", path: "${params.outdir}/${meta.id}/preprocessing/trimmed_reads/"
 
     input:
     tuple val(meta), path(extracted_R1), path(extracted_R2)

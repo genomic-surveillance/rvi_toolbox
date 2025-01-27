@@ -1,7 +1,7 @@
 process run_sra_human_scrubber {
     tag "${meta.id}"
     label "rsa_human_scrubber"
-    publishDir "${params.results_dir}/${meta.id}/preprocessing/", mode: "symlink"
+    publishDir "${params.outdir}/${meta.id}/preprocessing/", mode: "symlink"
 
     container "quay.io/gsu-pipelines/rvi-pp-sra-human-scrubber:v1.0"
     input:
