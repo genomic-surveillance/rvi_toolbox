@@ -1,4 +1,4 @@
-include { SUBSAMPLE_SEQTK } from '../modules/subsample/seqtk.nf'
+include { SUBSAMPLE_SEQTK } from '../modules/seqtk.nf'
 
 workflow SUBSAMPLE_ITER {
     take:
