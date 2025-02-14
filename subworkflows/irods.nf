@@ -11,13 +11,13 @@ def set_metadata(collection_path, data_obj_name, linked_metadata) {
     linked_metadata.each { item ->
         metadata[item.attribute.replaceAll("\\n|\\r", " ")] = item.value
     }
-    metadata.ID = "${metadata.id_run}_${metadata.lane}${params.lane_plex_sep}${metadata.tag_index}"
+    metadata.id = "${metadata.id_run}_${metadata.lane}${params.lane_plex_sep}${metadata.tag_index}"
     // need to join on 'alt_process' as well, otherwise will combine reads from n different alternative processing options = n x the raw read set
-    metadata.ID = !metadata.alt_process ? "${metadata.ID}" : "${metadata.ID}_${metadata.alt_process}"
+    metadata.id = !metadata.alt_process ? "${metadata.id}" : "${metadata.id}_${metadata.alt_process}"
     def slurper = new groovy.json.JsonSlurper()
     def component = slurper.parseText(metadata["component"])
     if ( component.subset ){
-        metadata.ID = "${metadata.ID}_${component.subset}"
+        metadata.id = "${metadata.id}_${component.subset}"
         metadata.subset = component.subset
     }else{
         metadata.subset = "target"
@@ -100,7 +100,7 @@ workflow CRAM_EXTRACT {
     }.ifEmpty("fresh_run").set{ existing_id }
 
     meta_cram_ch.combine( existing_id | collect | map{ [it] })
-    | filter { metadata, cram_path, existing -> !(metadata.ID in existing)}
+    | filter { metadata, cram_path, existing -> !(metadata.id in existing)}
     | map { it[0,1] }
     | set{ do_not_exist }
 
