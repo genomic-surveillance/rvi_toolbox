@@ -1,28 +1,28 @@
 process INSTRAIN_PROFILE {
-    tag "${meta.ID}"
+    tag "${meta.id}"
     label 'mem_4'
     label 'time_queue_from_small_slow2'
 
     container 'quay.io/sangerpathogens/instrain:1.9.0'
     
-    if (params.instrain_full_output_abundance_estimation) { publishDir path: "${params.outdir}/${meta.ID}/instrain/", mode: 'copy', overwrite: true, pattern: "*_instrain_output" }
-    publishDir "${params.outdir}/${meta.ID}/instrain/", mode: 'copy', overwrite: true, pattern: '*.tsv'
+    if (params.instrain_full_output_abundance_estimation) { publishDir path: "${params.outdir}/${meta.id}/instrain/", mode: 'copy', overwrite: true, pattern: "*_instrain_output" }
+    publishDir "${params.outdir}/${meta.id}/instrain/", mode: 'copy', overwrite: true, pattern: '*.tsv'
     
     input:
     tuple val(meta), path(sorted_bam), path(stb_file), path(genome_file)
 
     output:
-    path("${meta.ID}_instrain_output"), emit: full_output, optional: true
+    path("${meta.id}_instrain_output"), emit: full_output, optional: true
     tuple val(meta), path("${genome_info_file}"), emit: genome_info_file, optional: true
     path(sorted_bam), emit: sorted_bam
     tuple val(meta), path("${workdir}"), emit: meta_workdir
 
     script:
-    genome_info_file="${meta.ID}_genome_info.tsv"
+    genome_info_file="${meta.id}_genome_info.tsv"
     workdir="workdir.txt"
     """
     pwd > workdir.txt
-    inStrain profile ${sorted_bam} ${genome_file} -o ${meta.ID}_instrain_output -p ${task.cpus} -s ${stb_file} --skip_plot_generation ${params.instrain_profile_options} 2> instrain.err
+    inStrain profile ${sorted_bam} ${genome_file} -o ${meta.id}_instrain_output -p ${task.cpus} -s ${stb_file} --skip_plot_generation ${params.instrain_profile_options} 2> instrain.err
     status=\${?}
     if [ \${status} -gt 0 ] ; then
         # try and catch known exceptions from the stored stderr stream
@@ -32,25 +32,25 @@ process INSTRAIN_PROFILE {
     else
         cat instrain.err 1>&2
     fi
-    cp ${meta.ID}_instrain_output/output/${meta.ID}"_instrain_output_genome_info.tsv" ./${genome_info_file}
+    cp ${meta.id}_instrain_output/output/${meta.id}"_instrain_output_genome_info.tsv" ./${genome_info_file}
     """
 }
 
 process INSTRAIN_QUICKPROFILE {
-    tag "${meta.ID}"
+    tag "${meta.id}"
     label 'mem_4'
     label 'time_queue_from_normal'
 
     container 'quay.io/sangerpathogens/instrain:1.9.0'
     
-    if (params.instrain_quick_profile_abundance_estimation) { publishDir path: "${params.outdir}/${meta.ID}/instrain/", mode: 'copy', overwrite: true, pattern: "*_instrain_quick_profile_output" }
-    publishDir "${params.outdir}/${meta.ID}/instrain/", mode: 'copy', overwrite: true, pattern: '*.tsv'
+    if (params.instrain_quick_profile_abundance_estimation) { publishDir path: "${params.outdir}/${meta.id}/instrain/", mode: 'copy', overwrite: true, pattern: "*_instrain_quick_profile_output" }
+    publishDir "${params.outdir}/${meta.id}/instrain/", mode: 'copy', overwrite: true, pattern: '*.tsv'
     
     input:
     tuple val(meta), path(sorted_bam), path(stb_file), path(genome_file)
 
     output:
-    path("${meta.ID}_instrain_quick_profile_output"), emit: quick_profile, optional: true
+    path("${meta.id}_instrain_quick_profile_output"), emit: quick_profile, optional: true
     path(sorted_bam), emit: sorted_bam
     tuple val(meta), path("${workdir}"), emit: meta_workdir
 
@@ -58,7 +58,7 @@ process INSTRAIN_QUICKPROFILE {
     workdir="workdir.txt"
     """
     pwd > "${workdir}"
-    inStrain quick_profile ${sorted_bam} ${genome_file} -o ${meta.ID}_instrain_quick_profile_output -p ${task.cpus} -s ${stb_file}
+    inStrain quick_profile ${sorted_bam} ${genome_file} -o ${meta.id}_instrain_quick_profile_output -p ${task.cpus} -s ${stb_file}
     """
 }
 
@@ -76,7 +76,7 @@ process GENERATE_STB {
     script:
     """
     sed 's|\$|_genomic.fna.gz|g' $sourmash_genomes > genomes.txt
-    grep -w -f genomes.txt ${params.stb_file_abundance_estimation} > ${meta.ID}_gtdb_subset.stb
+    grep -w -f genomes.txt ${params.stb_file_abundance_estimation} > ${meta.id}_gtdb_subset.stb
     """
 }
 

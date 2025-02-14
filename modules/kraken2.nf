@@ -1,10 +1,10 @@
 process KRAKEN2 {
-    tag "${meta.ID}"
+    tag "${meta.id}"
     label 'cpu_4'
     label 'mem_8'
     label 'time_12'
 
-    publishDir "${params.outdir}/${meta.ID}/kraken2", mode: 'copy', overwrite: true, pattern: "*.tsv"
+    publishDir "${params.outdir}/${meta.id}/kraken2", mode: 'copy', overwrite: true, pattern: "*.tsv"
 
     container 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
 
@@ -16,8 +16,8 @@ process KRAKEN2 {
     tuple val(meta), path(ksamreportout),  emit: kraken2_sample_report
 
     script:
-    kreportout = "${meta.ID}_kraken_report.tsv"
-    ksamreportout = "${meta.ID}_kraken_sample_report.tsv"
+    kreportout = "${meta.id}_kraken_report.tsv"
+    ksamreportout = "${meta.id}_kraken_sample_report.tsv"
     """
     kraken2 --db "${kraken2_db}" \
             --threads ${task.cpus} \
@@ -44,13 +44,13 @@ process KRAKEN2 {
 }
 
 process KRAKEN2_GET_CLASSIFIED {
-    tag "${meta.ID}"
+    tag "${meta.id}"
     label 'cpu_4'
     label 'mem_8'
     label 'time_12'
 
-    publishDir "${params.outdir}/${meta.ID}/kraken2", mode: 'copy', overwrite: true, pattern: "*.tsv"
-    publishDir "${params.outdir}/${meta.ID}/kraken2", mode: 'copy', overwrite: true, pattern: "classified.fastq"
+    publishDir "${params.outdir}/${meta.id}/kraken2", mode: 'copy', overwrite: true, pattern: "*.tsv"
+    publishDir "${params.outdir}/${meta.id}/kraken2", mode: 'copy', overwrite: true, pattern: "classified.fastq"
 
     container 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
 
@@ -64,26 +64,26 @@ process KRAKEN2_GET_CLASSIFIED {
     tuple val(meta), path("*_unclassified.fastq"),  emit: unclassified_reads
 
     script:
-    kraken2_id = "${meta.ID}".replaceAll('#','_')
+    kraken2_id = "${meta.id}".replaceAll('#','_')
     """
     kraken2 --db "${kraken2_db}" \
             --threads ${task.cpus} \
             --classified-out "${kraken2_id}#_classified.fastq" --unclassified-out "${kraken2_id}#_unclassified.fastq" \
-            --output "${meta.ID}_kraken_report.tsv" \
+            --output "${meta.id}_kraken_report.tsv" \
             --use-names \
-            --report "${meta.ID}_kraken_sample_report.tsv" \
+            --report "${meta.id}_kraken_sample_report.tsv" \
             --report-zero-counts \
             --paired "${reads_1}" "${reads_2}"
     """
 }
 
 process COMPRESS_READS {
-    tag "${meta.ID}"
+    tag "${meta.id}"
     label 'cpu_1'
     label 'mem_1'
     label 'time_1'
 
-    publishDir "${params.outdir}/${meta.ID}/kraken2", mode: 'copy', overwrite: true
+    publishDir "${params.outdir}/${meta.id}/kraken2", mode: 'copy', overwrite: true
 
     input:
     tuple val(meta), path(reads_1), path(reads_2)
