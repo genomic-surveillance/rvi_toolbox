@@ -14,10 +14,9 @@ workflow PREPROCESSING {
 
     take:
 
-        sample_taxid_ch // tuple (meta, reads)
+        reads_ch // tuple (meta, read_1, read_2)
 
     main:
-        reads_ch = sample_taxid_ch.map{meta, reads -> tuple (meta, reads[0], reads[1])}
         // run trimmomatic
         if (params.run_trimmomatic){
             run_trimmomatic(reads_ch)
