@@ -1,8 +1,8 @@
-include {run_trimmomatic} from "../modules/run_trimmomatic.nf"
-include {run_fastq2fasta} from "../modules/run_fastq2fasta.nf"
-include {run_trf} from "../modules/run_trf.nf"
-include {run_rmRepeatFromFq} from "../modules/run_rmRepeatFromFq.nf"
-include {run_sra_human_scrubber} from "../modules/run_scrubber.nf"
+include {TRIMMOMATIC} from "../modules/trimmomatic.nf"
+include {FASTQ2FASTA} from "../modules/fastq2fasta.nf"
+include {TRF} from "../modules/trf.nf"
+include {RMREPEATFROMFASTQ} from "../modules/rmRepeatFromFq.nf"
+include {SRA_HUMAN_SCRUBBER} from "../modules/scrubber.nf"
 
 workflow PREPROCESSING {
     /*
@@ -19,8 +19,8 @@ workflow PREPROCESSING {
     main:
         // run trimmomatic
         if (params.run_trimmomatic){
-            run_trimmomatic(reads_ch)
-            reads_ch = run_trimmomatic.out.paired_channel // tuple (meta, read_1, read_2)
+            TRIMMOMATIC(reads_ch)
+            reads_ch = TRIMMOMATIC.out.paired_channel // tuple (meta, read_1, read_2)
         }
 
         // run trf
@@ -33,12 +33,12 @@ workflow PREPROCESSING {
                 .set {fqs_ch}
             
             // convert
-            run_fastq2fasta(reads_ch)
-            run_fastq2fasta.out // tuple (meta, fasta_1, fasta_2)
+            FASTQ2FASTA(reads_ch)
+            FASTQ2FASTA.out // tuple (meta, fasta_1, fasta_2)
                 | set {trf_in_ch}
             
-            run_trf(trf_in_ch)
-            run_trf.out.paired_trf // tuple (meta, trf_out_1, trf_out_2)
+            TRF(trf_in_ch)
+            TRF.out.paired_trf // tuple (meta, trf_out_1, trf_out_2)
                 | map {meta, trf_out_1, trf_out_2 -> 
                     tuple (meta.id,[trf_out_1, trf_out_2])
                  }
@@ -48,15 +48,15 @@ workflow PREPROCESSING {
                 | join(trf_ch) // tuple (meta.id, meta, [fqs], [trfs_out])
                 | map {id, meta, fqs, trfs -> tuple(meta, fqs[0], fqs[1], trfs[0], trfs[1])}
                 | set {rmTRFfromFq_In_ch}
-            run_rmRepeatFromFq(rmTRFfromFq_In_ch)
-            run_rmRepeatFromFq.out.fastqs
+            RMREPEATFROMFASTQ(rmTRFfromFq_In_ch)
+            RMREPEATFROMFASTQ.out.fastqs
                 | set {reads_ch} // tuple (meta, trf_fq_1, trf_fq_2)
         }
 
         // run human-sra-scrubber
         if (params.run_scrubber){
-            run_sra_human_scrubber(reads_ch)
-            reads_ch = run_sra_human_scrubber.out
+            SRA_HUMAN_SCRUBBER(reads_ch)
+            reads_ch = SRA_HUMAN_SCRUBBER.out
         }
     reads_ch
       .map{meta, reads_1, reads_2 -> tuple(meta, [reads_1, reads_2])}
