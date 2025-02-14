@@ -9,7 +9,7 @@ process METADATA {
     publishDir "${params.outdir}/", mode: 'copy', overwrite: true, pattern: "${timestampout}"
 
     input:
-    path(metadata)
+    val(metadata)
     val(metadata_tag)
 
     output:
