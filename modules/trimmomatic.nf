@@ -5,7 +5,7 @@ params.trimmomatic_options = "ILLUMINACLIP:${params.adapter_fasta}:2:10:7:1 CROP
 params.publish_trimmed_reads = true
 params.trimmomatic_threads = 4
 
-process run_trimmomatic {
+process TRIMMOMATIC {
     tag "${meta.id}"
     label 'mem_1'
     label 'time_1'

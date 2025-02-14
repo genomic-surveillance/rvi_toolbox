@@ -1,4 +1,4 @@
-process run_sra_human_scrubber {
+process SRA_HUMAN_SCRUBBER {
     tag "${meta.id}"
     label "rsa_human_scrubber"
     publishDir "${params.results_dir}/${meta.id}/preprocessing/", mode: "symlink"
