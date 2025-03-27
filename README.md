@@ -15,9 +15,8 @@ The `combined_input.nf` and `irods.nf` provide workflows to fetch data from [IRO
 
 The `combined_input.nf` workflow consolidates and validates input data from two sources:
 
-    - Local Samplesheets: Validates FASTQ paths (via `INPUT_CHECK`).
-
-    - iRODS Metadata: Fetches sequencing data from iRODS using study/run/lane IDs (via `IRODS_MANIFEST_PARSE` and `IRODS_CLI`).
+- Local Samplesheets: Validates FASTQ paths (via `INPUT_CHECK`).
+- iRODS Metadata: Fetches sequencing data from iRODS using study/run/lane IDs (via `IRODS_MANIFEST_PARSE` and `IRODS_CLI`).
 
 ### IRODS.nf
 
