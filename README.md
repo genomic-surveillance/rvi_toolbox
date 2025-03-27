@@ -11,7 +11,7 @@ This repository provides a set of workflows and modules which can be imported by
 
 The `combined_input.nf` and `irods.nf` provide workflows to fetch data from [IRODS](https://irods.org/).
 
-### COMBINED_INPUT.nf Workflow
+### COMBINED_INPUT.nf
 
 The `combined_input.nf` workflow consolidates and validates input data from two sources:
 
@@ -19,9 +19,7 @@ The `combined_input.nf` workflow consolidates and validates input data from two 
 
     - iRODS Metadata: Fetches sequencing data from iRODS using study/run/lane IDs (via `IRODS_MANIFEST_PARSE` and `IRODS_CLI`).
 
-### IRODS.nf Workflow
-
-IRODS WORKFLOW
+### IRODS.nf
 
 The irods.nf workflow fetches and processes sequencing data from iRODS, converting CRAMs to FASTQs while preserving metadata. It consists of two main sub-workflows:
 
@@ -53,11 +51,10 @@ The irods.nf workflow fetches and processes sequencing data from iRODS, converti
 
 The `PREPROCESSING.nf` workflow processes raw FASTQ files through a modular pipeline:
 
-    - Trimmomatic: Removes adapters (configurable via `adapter_fasta` parameter).
-
-    - Tandem Repeat Finder (`TRF`): Masks tandem repeats by converting FASTQ to FASTA, running `TRF`, and filtering repeats from the original reads.
-
-    - Human Read Removal: Uses sra-human-scrubber to exclude human-derived sequences.
+Key Steps:
+- Trimmomatic: Removes adapters (configurable via `adapter_fasta` parameter).
+- Tandem Repeat Finder (`TRF`): Masks tandem repeats by converting FASTQ to FASTA, running `TRF`, and filtering repeats from the original reads.
+- Human Read Removal: Uses sra-human-scrubber to exclude human-derived sequences.
 
 Each step is toggleable via parameters (`run_trimmomatic`, `run_trf`, `run_hrr`). Inputs are paired-end FASTQs (provided as channel of the following structure `tuples (meta, [read1, read2]`), and outputs are cleaned FASTQs in the same format. The workflow validates paths (e.g., adapter files) and warns if all modules are disabled.
 
