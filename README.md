@@ -1,6 +1,6 @@
 # RVI TOOLBOX
 
-This repository provides a set of workflows and modules which can be imported by multiple pipelines used by the [RVI project](https://www.sanger.ac.uk/group/respiratory-virus-and-microbiome-initiative/).
+This reprosiroty provides reusable Nextflow workflows and submodules for the [RVI](https://www.sanger.ac.uk/group/respiratory-virus-and-microbiome-initiative/)’s pipeline ecosystem.
 
 ## PREREQUISITES
 - Nextflow (≥22.04.0)
