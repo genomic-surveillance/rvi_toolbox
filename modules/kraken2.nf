@@ -4,7 +4,7 @@ process KRAKEN2 {
     label 'mem_8'
     label 'time_12'
 
-    publishDir "${params.outdir}/${meta.id}/kraken2", mode: 'copy', overwrite: true, pattern: "*.tsv"
+    publishDir "${params.results_dir}/${meta.id}/kraken2", mode: 'copy', overwrite: true, pattern: "*.tsv"
 
     container 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
 
@@ -49,8 +49,8 @@ process KRAKEN2_GET_CLASSIFIED {
     label 'mem_8'
     label 'time_12'
 
-    publishDir "${params.outdir}/${meta.id}/kraken2", mode: 'copy', overwrite: true, pattern: "*.tsv"
-    publishDir "${params.outdir}/${meta.id}/kraken2", mode: 'copy', overwrite: true, pattern: "classified.fastq"
+    publishDir "${params.results_dir}/${meta.id}/kraken2", mode: 'copy', overwrite: true, pattern: "*.tsv"
+    publishDir "${params.results_dir}/${meta.id}/kraken2", mode: 'copy', overwrite: true, pattern: "classified.fastq"
 
     container 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
 
@@ -83,7 +83,7 @@ process COMPRESS_READS {
     label 'mem_1'
     label 'time_1'
 
-    publishDir "${params.outdir}/${meta.id}/kraken2", mode: 'copy', overwrite: true
+    publishDir "${params.results_dir}/${meta.id}/kraken2", mode: 'copy', overwrite: true
 
     input:
     tuple val(meta), path(reads_1), path(reads_2)

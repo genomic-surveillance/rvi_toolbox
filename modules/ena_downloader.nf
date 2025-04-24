@@ -6,7 +6,7 @@ process DOWNLOAD_METADATA {
 
     container 'quay.io/sangerpathogens/enadownloader:v2.3.3-903be379'
 
-    publishDir "${params.outdir}/metadata", mode: 'copy', overwrite: true, enabled: params.publish_metadata
+    publishDir "${params.results_dir}/metadata", mode: 'copy', overwrite: true, enabled: params.publish_metadata
 
     input:
     tuple val(meta), path(accessions)
@@ -27,7 +27,7 @@ process DOWNLOAD_FASTQS {
     label 'time_30m'
     maxForks 10
 
-    publishDir "${params.outdir}/${meta.id}/fastqs", mode: 'copy', overwrite: true
+    publishDir "${params.results_dir}/${meta.id}/fastqs", mode: 'copy', overwrite: true
 
     input:
     tuple val(meta), val(fastq_path_1), val(fastq_path_2)

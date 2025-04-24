@@ -62,7 +62,7 @@ def validate_parameters() {
     errors += validate_number_param("--bowtie2_samtools_threads", params.bowtie2_samtools_threads_abundance_estimation)
     errors += validate_number_param("--queue_size", params.queue_size_abundance_estimation)
     errors += validate_number_param("--instrain_threads", params.instrain_threads_abundance_estimation)
-    errors += validate_outdir(params.outdir)
+    errors += validate_outdir(params.results_dir)
 
     if (params.instrain_full_output_abundance_estimation && params.instrain_quick_profile_abundance_estimation) {
         log.error("the --instrain_full_output and --instrain_quick_profile options are incompatible, please choose one of these options.")

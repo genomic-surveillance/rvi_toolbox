@@ -3,7 +3,7 @@ process KREPORT2MPA {
     label 'mem_1'
     label 'time_1'
 
-    publishDir "${params.outdir}/${meta.id}/bracken", mode: 'copy', overwrite: true, pattern: "*.mpa.txt"
+    publishDir "${params.results_dir}/${meta.id}/bracken", mode: 'copy', overwrite: true, pattern: "*.mpa.txt"
 
 
     container 'quay.io/biocontainers/krakentools:1.2--pyh5e36f6f_0'
@@ -26,7 +26,7 @@ process GENERATE_ABUNDANCE_SUMMARY {
     label 'mem_1'
     label 'time_1'
 
-    publishDir "${params.outdir}/abundance_summary", mode: 'copy', overwrite: true
+    publishDir "${params.results_dir}/abundance_summary", mode: 'copy', overwrite: true
 
     container 'quay.io/biocontainers/krakentools:1.2--pyh5e36f6f_0'
 

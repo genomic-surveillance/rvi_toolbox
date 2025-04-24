@@ -5,8 +5,8 @@ process INSTRAIN_PROFILE {
 
     container 'quay.io/sangerpathogens/instrain:1.9.0'
     
-    if (params.instrain_full_output_abundance_estimation) { publishDir path: "${params.outdir}/${meta.id}/instrain/", mode: 'copy', overwrite: true, pattern: "*_instrain_output" }
-    publishDir "${params.outdir}/${meta.id}/instrain/", mode: 'copy', overwrite: true, pattern: '*.tsv'
+    if (params.instrain_full_output_abundance_estimation) { publishDir path: "${params.results_dir}/${meta.id}/instrain/", mode: 'copy', overwrite: true, pattern: "*_instrain_output" }
+    publishDir "${params.results_dir}/${meta.id}/instrain/", mode: 'copy', overwrite: true, pattern: '*.tsv'
     
     input:
     tuple val(meta), path(sorted_bam), path(stb_file), path(genome_file)
@@ -43,8 +43,8 @@ process INSTRAIN_QUICKPROFILE {
 
     container 'quay.io/sangerpathogens/instrain:1.9.0'
     
-    if (params.instrain_quick_profile_abundance_estimation) { publishDir path: "${params.outdir}/${meta.id}/instrain/", mode: 'copy', overwrite: true, pattern: "*_instrain_quick_profile_output" }
-    publishDir "${params.outdir}/${meta.id}/instrain/", mode: 'copy', overwrite: true, pattern: '*.tsv'
+    if (params.instrain_quick_profile_abundance_estimation) { publishDir path: "${params.results_dir}/${meta.id}/instrain/", mode: 'copy', overwrite: true, pattern: "*_instrain_quick_profile_output" }
+    publishDir "${params.results_dir}/${meta.id}/instrain/", mode: 'copy', overwrite: true, pattern: '*.tsv'
     
     input:
     tuple val(meta), path(sorted_bam), path(stb_file), path(genome_file)
@@ -85,7 +85,7 @@ process GENERATE_INSTRAIN_SUMMARY {
     label 'mem_1'
     label 'time_30m'
 
-    publishDir "${params.outdir}/abundance_summary", mode: 'copy', overwrite: true
+    publishDir "${params.results_dir}/abundance_summary", mode: 'copy', overwrite: true
 
     input:
     path(genome_info_files)
