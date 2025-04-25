@@ -15,7 +15,7 @@ process SRA_HUMAN_SCRUBBER {
     """
     n=0
     for fastq in ${fastq_1} ${fastq_2} ; do
-      n=$(( \${n} + 1 ))
+      n=\$(( \${n} + 1 ))
       if [[ "\${fastq}" == *.gz ]] ; then 
         gzip -d \${fastq}
         fq=\${fastq%.gz}
