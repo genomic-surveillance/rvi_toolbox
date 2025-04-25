@@ -17,8 +17,8 @@ process SRA_HUMAN_SCRUBBER {
     for fastq in ${fastq_1} ${fastq_2} ; do
       n=\$(( \${n} + 1 ))
       if [[ "\${fastq}" == *.gz ]] ; then 
-        gzip -d \${fastq}
         fq=\${fastq%.gz}
+        gzip -cd \${fastq} > \${fq}
       else
         fq=\${fastq}
       fi
