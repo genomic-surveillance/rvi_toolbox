@@ -58,11 +58,8 @@ workflow PREPROCESSING {
             SRA_HUMAN_SCRUBBER(reads_ch)
             reads_ch = SRA_HUMAN_SCRUBBER.out
         }
-    reads_ch
-      .map{meta, reads_1, reads_2 -> tuple(meta, [reads_1, reads_2])}
-      .set {out_ch}
     emit:
-        out_ch // tuple (meta, fastq_pair)
+        reads_ch // tuple (meta, reads_1, reads_2)
 
 }
 
