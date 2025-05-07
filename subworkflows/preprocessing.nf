@@ -20,20 +20,26 @@ workflow PREPROCESSING {
         // run trimmomatic
         if (params.run_trimmomatic){
             TRIMMOMATIC(reads_ch)
-            reads_ch = TRIMMOMATIC.out.paired_channel // tuple (meta, read_1, read_2)
-        }
+            //reads_ch = TRIMMOMATIC.out.paired_channel // tuple (meta, read_1, read_2)
+            trimmomatic_Out_ch = TRIMMOMATIC.out.paired_channel // tuple (meta, read_trim_1, read_trim_2)
+        } 
 
         // run trf
         if (params.run_trf){
-            
+            if (params.run_trimmomatic){
+                fastq2fasta_in_ch = trimmomatic_Out_ch
+            } else {
+                fastq2fasta_in_ch = reads_ch
+            }
+
             // preapare fastq channel to be join by id
-            reads_ch.map{meta, fq_1, fq_2 -> 
+            fastq2fasta_in_ch.map{meta, fq_1, fq_2 -> 
                 tuple (meta.id, meta, [fq_1, fq_2])
                 }
                 .set {fqs_ch}
             
             // convert
-            FASTQ2FASTA(reads_ch)
+            FASTQ2FASTA(fastq2fasta_in_ch)
             FASTQ2FASTA.out // tuple (meta, fasta_1, fasta_2)
                 | set {trf_in_ch}
             
@@ -50,17 +56,47 @@ workflow PREPROCESSING {
                 | set {rmTRFfromFq_In_ch}
             RMREPEATFROMFASTQ(rmTRFfromFq_In_ch)
             RMREPEATFROMFASTQ.out.fastqs
-                | set {reads_ch} // tuple (meta, trf_fq_1, trf_fq_2)
+                | set {trf_Out_ch} // tuple (meta, trf_fq_1, trf_fq_2)
         }
 
         // run human-sra-scrubber
         if (params.run_scrubber){
-            SRA_HUMAN_SCRUBBER(reads_ch)
-            reads_ch = SRA_HUMAN_SCRUBBER.out
-        }
-    emit:
-        reads_ch // tuple (meta, reads_1, reads_2)
 
+            // if only scrubber is on
+            if ((!params.run_trimmomatic) && (!params.run_trf)){
+                scrubber_In_ch = reads_ch
+            }
+
+            // if trimmomatic and no trf
+            if ((params.run_trimmomatic) && (!params.run_trf)){
+                scrubber_In_ch = trimmomatic_Out_ch
+            }
+
+            // if trf is true
+            if (params.run_trf){
+                scrubber_In_ch = trf_Out_ch
+            }
+
+            SRA_HUMAN_SCRUBBER(scrubber_In_ch)
+            scrubber_Out_ch = SRA_HUMAN_SCRUBBER.out // tuple(meta, reads_clean_1, reads_clean_2)
+        }
+
+        // setup output channel
+        // if trimmomatics on, trf off and scrubber off
+        if ((params.run_trimmomatic) && (!params.run_trf) && (!params.run_scrubber)){
+            out_ch = trimmomatic_Out_ch // tuple (meta, reads_trim_1, reads_trim_2)
+        }
+        // if trf on, scrubber off
+        if ((params.run_trf) && (!params.run_scrubber)){
+            out_ch = trf_Out_ch // tuple (meta, trf_fq_1, trf_fq_2)
+        }
+        // if scrubber on
+        if (params.run_scrubber){
+            out_ch = scrubber_Out_ch // tuple (meta, reads_clean_1, reads_clean_2)
+        }
+
+    emit:
+        out_ch // tuple (meta, reads_1, reads_2)
 }
 
 def parse_mnf_meta(preprocessing_mnf) {
