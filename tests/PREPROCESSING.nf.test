@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow PREPROCESSING"
-    script "subworkflows/PREPROCESSING.nf"
+    script "subworkflows/preprocessing.nf"
     workflow "PREPROCESSING"
 
     test("Should run without failures") {
