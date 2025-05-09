@@ -21,7 +21,7 @@ class NextflowTool {
         def jsonStr    = JsonOutput.toJson(params)
         temp_pf.text   = JsonOutput.prettyPrint(jsonStr)
 
-        FilesEx.copyTo(temp_pf.toPath(), "${params.results_dir}/pipeline_info/params_${timestamp}.json")
+        FilesEx.copyTo(temp_pf.toPath(), "${params.outdir}/pipeline_info/params_${timestamp}.json")
         temp_pf.delete()
     }
 

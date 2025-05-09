@@ -21,7 +21,7 @@ workflow PREPROCESSING {
         if (params.run_trimmomatic){
             TRIMMOMATIC(reads_ch)
             trimmomatic_Out_ch = TRIMMOMATIC.out.paired_channel // tuple (meta, read_trim_1, read_trim_2)
-        }
+        } 
 
         // run trf
         if (params.run_trf){
@@ -30,7 +30,7 @@ workflow PREPROCESSING {
             } else {
                 fastq2fasta_in_ch = reads_ch
             }
-            
+
             // preapare fastq channel to be join by id
             fastq2fasta_in_ch.map{meta, fq_1, fq_2 -> 
                 tuple (meta.id, meta, [fq_1, fq_2])
@@ -59,7 +59,7 @@ workflow PREPROCESSING {
         }
 
         // run human-sra-scrubber
-        if (params.run_hrr){
+        if (params.run_scrubber){
 
             // if only scrubber is on
             if ((!params.run_trimmomatic) && (!params.run_trf)){
@@ -123,41 +123,4 @@ def parse_mnf_meta(preprocessing_mnf) {
 workflow {
     mnf_ch = parse_mnf_meta(params.preprocessing_mnf)
     PREPROCESSING(mnf_ch)
-}
-
-def check_preprocessing_params(){
-    /*
-    -----------------------------------------------------------------
-    Checks for necessary parameters and validates paths to ensure 
-    they exist. Logs errors if any required parameters are missing.
-    -----------------------------------------------------------------
-
-    - **Output**: Number of errors encountered during the checks.
-
-    -----------------------------------------------------------------
-
-    */
-    def errors = 0
-    // was the kraken database provided?
-    if (params.adapter_fasta == null){
-        log.error("No adapter_fasta path provided")
-        errors +=1
-    }
-
-    // if yes, is it a file which exists?
-    if (params.adapter_fasta){
-        adapter_fasta = file(params.adapter_fasta)
-        if (!adapter_fasta.exists()){
-            log.error("The adapter_fasta provided (${params.adapter_fasta}) does not exist.")
-            errors += 1
-        }
-    }
-
-    // check switchs
-
-    if ((params.run_trimmomatic == false) && (params.run_trf == false) && (params.run_hrr == false)){
-        log.error("All PREPROCESSING process switchs are off (run_trimmomatic = ${params.run_trimmomatic}; run_trf = ${params.run_trf} ; run_hrr = ${params.run_hrr}).")
-    }
-
-    return errors
 }

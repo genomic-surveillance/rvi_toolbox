@@ -34,7 +34,7 @@
             }
         },
         "scrubber Options": {
-            "run_scrubber": {
+            "run_hrr": {
                 "default": "true",
                 "help_text": "Run RSA-Human-Scrubble"
             }
