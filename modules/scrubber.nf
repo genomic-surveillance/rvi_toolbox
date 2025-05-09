@@ -1,6 +1,6 @@
-process run_sra_human_scrubber {
+process SRA_HUMAN_SCRUBBER {
     tag "${meta.id}"
-    label "rsa_human_scrubber"
+    label "sra_human_scrubber"
     publishDir "${params.results_dir}/${meta.id}/preprocessing/", mode: "symlink"
 
     container "quay.io/gsu-pipelines/rvi-pp-sra-human-scrubber:v1.0"
@@ -13,7 +13,16 @@ process run_sra_human_scrubber {
     script:
     // TODO check scrubber parameters to add
     """
-    scrub.sh -i ${fastq_1} -o ${meta.id}_1_clean.fastq
-    scrub.sh -i ${fastq_2} -o ${meta.id}_2_clean.fastq
+    n=0
+    for fastq in ${fastq_1} ${fastq_2} ; do
+      n=\$(( \${n} + 1 ))
+      if [[ "\${fastq}" == *.gz ]] ; then 
+        fq=\${fastq%.gz}
+        gzip -cd \${fastq} > \${fq}
+      else
+        fq=\${fastq}
+      fi
+      scrub.sh -i \${fq} -o ${meta.id}_\${n}_clean.fastq
+    done
     """
 }

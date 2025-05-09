@@ -11,13 +11,13 @@ def set_metadata(collection_path, data_obj_name, linked_metadata) {
     linked_metadata.each { item ->
         metadata[item.attribute.replaceAll("\\n|\\r", " ")] = item.value
     }
-    metadata.ID = "${metadata.id_run}_${metadata.lane}${params.lane_plex_sep}${metadata.tag_index}"
+    metadata.id = "${metadata.id_run}_${metadata.lane}${params.lane_plex_sep}${metadata.tag_index}"
     // need to join on 'alt_process' as well, otherwise will combine reads from n different alternative processing options = n x the raw read set
-    metadata.ID = !metadata.alt_process ? "${metadata.ID}" : "${metadata.ID}_${metadata.alt_process}"
+    metadata.id = !metadata.alt_process ? "${metadata.id}" : "${metadata.id}_${metadata.alt_process}"
     def slurper = new groovy.json.JsonSlurper()
     def component = slurper.parseText(metadata["component"])
     if ( component.subset ){
-        metadata.ID = "${metadata.ID}_${component.subset}"
+        metadata.id = "${metadata.id}_${component.subset}"
         metadata.subset = component.subset
     }else{
         metadata.subset = "target"
@@ -64,6 +64,14 @@ workflow QUERY_IRODS_METADATA {
             metamap = set_metadata(irods_item.collection, irods_item.data_object, irods_item.avus)
             cram_path = metamap.irods_path
             [metamap, cram_path]  }
+        .ifEmpty { error("""
+            Error: IRODS search returned no data!
+            - Please ensure you are logged on with `iinit` and re-run the
+            pipeline without `-resume`.
+            - If you are logged in, check the process IRODS_QUERY:BATON work
+            directory for permission errors and ensure the study exists.
+            """)
+        }
         .filter{ it[0]["subset"] != "${params.irods_subset_to_skip}" }
         .set{ meta_cram_ch }
 
@@ -87,12 +95,12 @@ workflow CRAM_EXTRACT {
 
     main:
 
-    Channel.fromPath("${params.outdir}/*/${params.preexisting_fastq_tag}/*_1.fastq.gz").map{ preexisting_fastq_path ->
+    Channel.fromPath("${params.results_dir}/*/${params.preexisting_fastq_tag}/*_1.fastq.gz").map{ preexisting_fastq_path ->
         ID = preexisting_fastq_path.Name.split("${params.split_sep_for_ID_from_fastq}")[0]
     }.ifEmpty("fresh_run").set{ existing_id }
 
     meta_cram_ch.combine( existing_id | collect | map{ [it] })
-    | filter { metadata, cram_path, existing -> !(metadata.ID in existing)}
+    | filter { metadata, cram_path, existing -> !(metadata.id in existing)}
     | map { it[0,1] }
     | set{ do_not_exist }
 

@@ -1,5 +1,5 @@
 process FILTER_METADATA {
-    tag "${meta.ID}"
+    tag "${meta.id}"
     label "cpu_1"
     label "mem_500M"
     label "time_30m"

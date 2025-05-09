@@ -1,5 +1,5 @@
 process SOURMASH_SKETCH {
-    tag "${meta.ID}"
+    tag "${meta.id}"
     label 'cpu_1'
     label 'mem_1'
     label 'time_queue_from_normal'
@@ -15,14 +15,14 @@ process SOURMASH_SKETCH {
     tuple val(meta), path(sourmash_sketch), emit: sketch
 
     script:
-    sourmash_sketch="${meta.ID}_sourmash_sketch"
+    sourmash_sketch="${meta.id}_sourmash_sketch"
     """
-    sourmash sketch dna -p scaled=10000,k=31 ${merged_fastq} -o ${meta.ID}_sourmash_sketch
+    sourmash sketch dna -p scaled=10000,k=31 ${merged_fastq} -o ${meta.id}_sourmash_sketch
     """
 }
 
 process SOURMASH_GATHER {
-    tag "${meta.ID}"
+    tag "${meta.id}"
     label 'cpu_1'
     label 'mem_4'
     label 'time_queue_from_normal'
@@ -38,10 +38,10 @@ process SOURMASH_GATHER {
     tuple val(meta), path(sourmash_genomes), emit: sourmash_genomes
 
     script:
-    sourmash_genomes="${meta.ID}_sourmash_genomes.txt"
+    sourmash_genomes="${meta.id}_sourmash_genomes.txt"
     """
     sourmash gather --dna ${sourmash_sketch} ${params.sourmash_db_abundance_estimation} -o sourmash.out
     # get species names out of sourmash output
-    tail -n +2 sourmash.out | awk -F "," '{ print \$10 }' | sed 's|[][]||g' | sed 's|"||g' | awk '{ print \$1 }' > ${meta.ID}_sourmash_genomes.txt
+    tail -n +2 sourmash.out | awk -F "," '{ print \$10 }' | sed 's|[][]||g' | sed 's|"||g' | awk '{ print \$1 }' > ${meta.id}_sourmash_genomes.txt
     """
 }

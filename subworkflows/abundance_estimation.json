@@ -5,10 +5,6 @@
             "abundance_estimation_subheader_1": {
                 "subtext": "\n  * Workflow step skipping/enabling options:"
             },
-            "skip_qc_abundance_estimation": {
-                "default": true,
-                "help_text": "Skip or enable read data clean-up including off-target (default: human host contaminant)\n            read removal with metaWRAP QC as a prior step to ABUNDANCE_ESTIMATION:INSTRAIN subworkflow? [default: true i.e. skip]\n              NB: this off-target/host-contamination removal step is mostly redundant\n              with upstream filtering with Kneaddata (when setting `--human_read_removal true`)."
-            },
             "instrain_quick_profile_abundance_estimation": {
                 "default": false,
                 "help_text": "use quick profiling from inStrain instead of the standard (more intensive) abundance estimation method"

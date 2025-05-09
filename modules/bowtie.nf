@@ -13,39 +13,39 @@ process BOWTIE_INDEX {
 
     script:
     """
-    bowtie2-build $subset_fasta ${meta.ID}_gtdb_subset.bt2 --threads 4 --large-index
+    bowtie2-build $subset_fasta ${meta.id}_gtdb_subset.bt2 --threads 4 --large-index
     """
 }
 
 process BOWTIE2SAMTOOLS {
-    tag "${meta.ID}"
+    tag "${meta.id}"
     label 'cpu_4'
     label 'mem_4'
     label 'time_queue_from_normal'
 
     container 'quay.io/sangerpathogens/bowtie2-samtools:1.1-c1'
 
-    if (params.bowtie2_samtools_only_abundance_estimation) { publishDir path: "${params.outdir}", mode: 'copy', overwrite: true, pattern: "*.sorted.bam" }
+    if (params.bowtie2_samtools_only_abundance_estimation) { publishDir path: "${params.results_dir}", mode: 'copy', overwrite: true, pattern: "*.sorted.bam" }
     input:
     tuple val(meta), path(first_read), path(second_read), val(btidx)
     val threads
 
     output:
-    tuple val(meta), path("${meta.ID}.sorted.bam"), emit: bam_file
+    tuple val(meta), path("${meta.id}.sorted.bam"), emit: bam_file
     tuple val(meta), path(first_read), path(second_read), emit: trimmed_fastqs
-    path("${meta.ID}_mapping_rate.csv"), emit: map_rate_ch
+    path("${meta.id}_mapping_rate.csv"), emit: map_rate_ch
 
     script:
     """
-    bowtie2 -p $threads -x ${btidx} -1 $first_read -2 $second_read | samtools sort -@ $threads -o ${meta.ID}".sorted.bam"
+    bowtie2 -p $threads -x ${btidx} -1 $first_read -2 $second_read | samtools sort -@ $threads -o ${meta.id}".sorted.bam"
     mapping_rate=\$(grep "overall alignment rate" .command.err | awk '{ print \$1 }')
-    echo ${meta.ID},\${mapping_rate} > ${meta.ID}_mapping_rate.csv
+    echo ${meta.id},\${mapping_rate} > ${meta.id}_mapping_rate.csv
     """
 }
 
 process GET_OVERALL_MAPPING_RATE {
     
-    publishDir "${params.outdir}/mapping_rates/", mode: 'copy', overwrite: true, pattern: 'mapping_rates.csv', saveAs: { filename -> "${workflow.start}_mapping_rates.csv" }
+    publishDir "${params.results_dir}/mapping_rates/", mode: 'copy', overwrite: true, pattern: 'mapping_rates.csv', saveAs: { filename -> "${workflow.start}_mapping_rates.csv" }
     
     input:
     path(mapping_rate)

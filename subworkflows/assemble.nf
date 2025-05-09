@@ -1,5 +1,5 @@
 include { SUBSAMPLE_ITER } from './subsample.nf'
-include { METASPADES } from '../modules/assemble/metaspades.nf'
+include { METASPADES } from '../modules/metaspades.nf'
 
 workflow ASSEMBLE_META {
     // run metaspades on data set with at most X reads to avoid loss of quality when too much data fed in (statistical inconsistency)

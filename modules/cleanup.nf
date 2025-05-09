@@ -45,6 +45,6 @@ process CLEANUP_INSTRAIN_OUTPUT {
         # Remove instrain results
         instrain_dir=\$(cat $workdir)
         cd \$instrain_dir
-        rm -rf ${meta.ID}*
+        rm -rf ${meta.id}*
         """
 }

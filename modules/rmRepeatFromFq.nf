@@ -5,7 +5,7 @@ params.script_src_path="${projectDir}/rvi_toolbox/bin/"
 //       rvi_toolbox dir
 
 
-process run_rmRepeatFromFq {
+process RMREPEATFROMFASTQ {
     tag "${meta.id}"
     publishDir "${params.results_dir}/${meta.id}/preprocessing/", mode: "copy", pattern:"*.trf"
     container "quay.io/gsu-pipelines/rvi-vp-basecontainer"

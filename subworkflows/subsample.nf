@@ -1,4 +1,4 @@
-include { SUBSAMPLE_SEQTK } from '../modules/subsample/seqtk.nf'
+include { SUBSAMPLE_SEQTK } from '../modules/seqtk.nf'
 
 workflow SUBSAMPLE_ITER {
     take:
@@ -25,7 +25,7 @@ workflow SUBSAMPLE_ITER {
         def num_limit = (subsample_limit * 2).toString()
         shortstr_limit = num_limit.replaceFirst(/000000000$/, "G").replaceFirst(/000000$/, "M").replaceFirst(/000$/, "k")
         meta_new = [:]
-        meta_new.ID = "${meta.ID}_subsampled${shortstr_limit}-${iteration}"
+        meta_new.id = "${meta.id}_subsampled${shortstr_limit}-${iteration}"
         [meta_new, read_1, read_2]
     }.mix(subsampling_check.already_below_subsample).set{ final_read_channel }
 

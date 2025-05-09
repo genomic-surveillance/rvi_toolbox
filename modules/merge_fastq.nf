@@ -1,5 +1,5 @@
 process MERGE_FASTQS {
-    tag "${meta.ID}"
+    tag "${meta.id}"
     label 'cpu_1'
     label 'mem_1'
     label 'time_queue_from_normal'
@@ -11,8 +11,8 @@ process MERGE_FASTQS {
     tuple val(meta), path(merged_fastq), emit: merged_fastq
 
     script:
-    merged_fastq="${meta.ID}_merged.fastq.gz"
+    merged_fastq="${meta.id}_merged.fastq.gz"
     """
-    cat ${first_read} ${second_read} > ${meta.ID}_merged.fastq.gz
+    cat ${first_read} ${second_read} > ${meta.id}_merged.fastq.gz
     """
 }

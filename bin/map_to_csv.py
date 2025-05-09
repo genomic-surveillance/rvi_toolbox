@@ -31,7 +31,7 @@ def element_in_list_to_dict(input_list: list):
 
 def dataframe_from_input_list(input_list: list):
    df = pd.DataFrame(input_list)
-   df = df.set_index('ID')
+   df = df.set_index('id')
    return df
 
 args = parse_arguments()

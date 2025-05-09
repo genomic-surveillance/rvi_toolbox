@@ -20,17 +20,12 @@ CONVERTED FOR SUBWORKFLOW PURPOSES
 //
 // MODULES
 //
-include { CLEANUP_SORTED_BAM_FILES; CLEANUP_TRIMMED_FASTQ_FILES; CLEANUP_INSTRAIN_OUTPUT } from '../modules/abundance_estimation/cleanup.nf'
-include { MERGE_FASTQS } from '../modules/abundance_estimation/merge_fastq.nf'
-include { SOURMASH_SKETCH; SOURMASH_GATHER } from '../modules/abundance_estimation/sourmash.nf'
-include { SUBSET_GTDB } from '../modules/abundance_estimation/subset_fasta.nf'
-include { BOWTIE_INDEX; BOWTIE2SAMTOOLS; GET_OVERALL_MAPPING_RATE } from '../modules/abundance_estimation/bowtie.nf'
-include { GENERATE_STB; INSTRAIN_PROFILE; INSTRAIN_QUICKPROFILE; GENERATE_INSTRAIN_SUMMARY } from '../modules/abundance_estimation/instrain.nf'
-
-//
-// SUBWORKFLOWS
-//
-include { METAWRAP_QC } from './metawrap_qc.nf'
+include { CLEANUP_SORTED_BAM_FILES; CLEANUP_TRIMMED_FASTQ_FILES; CLEANUP_INSTRAIN_OUTPUT } from '../modules/cleanup.nf'
+include { MERGE_FASTQS } from '../modules/merge_fastq.nf'
+include { SOURMASH_SKETCH; SOURMASH_GATHER } from '../modules/sourmash.nf'
+include { SUBSET_GTDB } from '../modules/subset_fasta.nf'
+include { BOWTIE_INDEX; BOWTIE2SAMTOOLS; GET_OVERALL_MAPPING_RATE } from '../modules/bowtie.nf'
+include { GENERATE_STB; INSTRAIN_PROFILE; INSTRAIN_QUICKPROFILE; GENERATE_INSTRAIN_SUMMARY } from '../modules/instrain.nf'
 
 /*
 ========================================================================================
@@ -43,12 +38,7 @@ workflow ABUNDANCE_ESTIMATION{
     fastq_path_ch        // tuple( meta, read_1, read_2 )
 
     main:
-    if (params.skip_qc_abundance_estimation) {
-        MERGE_FASTQS(fastq_path_ch)
-    } else {
-        METAWRAP_QC(fastq_path_ch)
-        | MERGE_FASTQS()
-    }
+    MERGE_FASTQS(fastq_path_ch)
 
     if (params.sourmash_subset_abundance_estimation) {
 
@@ -76,18 +66,11 @@ workflow ABUNDANCE_ESTIMATION{
         stb_channel = Channel.fromPath("${params.stb_file_abundance_estimation}")
     }
 
-    if (params.skip_qc_abundance_estimation) {
-        fastq_path_ch.combine(index_channel).set{ bowtie_mapping_ch }
-        BOWTIE2SAMTOOLS(bowtie_mapping_ch, params.bowtie2_samtools_threads_abundance_estimation)
-    } else {
-        bowtie_mapping_ch = METAWRAP_QC.out.filtered_reads.join(index_channel)
-        BOWTIE2SAMTOOLS(bowtie_mapping_ch, params.bowtie2_samtools_threads_abundance_estimation)
-    }
+    fastq_path_ch.combine(index_channel).set{ bowtie_mapping_ch }
+    BOWTIE2SAMTOOLS(bowtie_mapping_ch, params.bowtie2_samtools_threads_abundance_estimation)
 
     if (params.cleanup_intermediate_files_abundance_estimation) {
-        if (!params.skip_qc_abundance_estimation) {
-            CLEANUP_TRIMMED_FASTQ_FILES(BOWTIE2SAMTOOLS.out.trimmed_fastqs)
-        }
+        CLEANUP_TRIMMED_FASTQ_FILES(BOWTIE2SAMTOOLS.out.trimmed_fastqs)
     }
 
     GET_OVERALL_MAPPING_RATE(BOWTIE2SAMTOOLS.out.map_rate_ch.collect())
