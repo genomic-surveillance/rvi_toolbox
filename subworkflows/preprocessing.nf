@@ -90,7 +90,7 @@ workflow PREPROCESSING {
             out_ch = trf_Out_ch // tuple (meta, trf_fq_1, trf_fq_2)
         }
         // if scrubber on
-        if (params.run_scrubber){
+        if (params.run_hrr){
             out_ch = scrubber_Out_ch // tuple (meta, reads_clean_1, reads_clean_2)
         }
 
