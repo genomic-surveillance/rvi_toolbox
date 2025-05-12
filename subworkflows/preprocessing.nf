@@ -82,11 +82,11 @@ workflow PREPROCESSING {
 
         // setup output channel
         // if trimmomatics on, trf off and scrubber off
-        if ((params.run_trimmomatic) && (!params.run_trf) && (!params.run_scrubber)){
+        if ((params.run_trimmomatic) && (!params.run_trf) && (!params.run_hrr)){
             out_ch = trimmomatic_Out_ch // tuple (meta, reads_trim_1, reads_trim_2)
         }
         // if trf on, scrubber off
-        if ((params.run_trf) && (!params.run_scrubber)){
+        if ((params.run_trf) && (!params.run_hrr)){
             out_ch = trf_Out_ch // tuple (meta, trf_fq_1, trf_fq_2)
         }
         // if scrubber on
