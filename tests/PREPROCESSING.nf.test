@@ -161,6 +161,8 @@ nextflow_workflow {
                     // check if emitted output has been created
                     assert out_ch != null
 
+                    // reads should be balanced, so we must have same number of lines in both mate files
+                    assert path(out_ch[0][1]).readLines().size() == path(out_ch[0][2]).readLines().size()
                     // MORE TESTS: make sure files have same number of lines, contain expected read IDs
                 }
             }
