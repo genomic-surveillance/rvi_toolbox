@@ -94,6 +94,9 @@ workflow PREPROCESSING {
             out_ch = scrubber_Out_ch // tuple (meta, reads_clean_1, reads_clean_2)
         }
 
+        // remove unpaired sequences at the end of the process
+        
+
     emit:
         out_ch // tuple (meta, reads_1, reads_2)
 }
