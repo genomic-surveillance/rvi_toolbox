@@ -14,10 +14,9 @@ nextflow_workflow {
                 meta = [
                     id: "FluH1N1_SARSCoV2_hPIV1_33K_ea_P1",
                 ]
-                reads = [
-                    "${projectDir}/tests/test_data/FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_100reads_1.fastq", 
-                    "${projectDir}/tests/test_data/FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_100reads_2.fastq"
-                ]
+                read_1 = "${projectDir}/tests/test_data/FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_100reads_1.fastq"
+                read_2 = "${projectDir}/tests/test_data/FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_100reads_2.fastq"
+        
 
                 script_src_path="${projectDir}/bin/" 
             }
@@ -25,7 +24,7 @@ nextflow_workflow {
             workflow {
                 """
                 // define inputs of the workflow here. Example:
-                input[0] = Channel.of(tuple(params.meta, params.reads))
+                input[0] = Channel.of(tuple(params.meta, params.read_1, params.read_2))
                 """
             }
 
@@ -35,4 +34,68 @@ nextflow_workflow {
             }
         }
     }
+
+    test("Should run without hrr") {
+
+        when {
+            params {
+                run_trimmomatic = true
+                run_trf = true
+                run_hrr = false
+                meta = [
+                    id: "FluH1N1_SARSCoV2_hPIV1_33K_ea_P1",
+                ]
+                read_1 = "${projectDir}/tests/test_data/FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_100reads_1.fastq"
+                read_2 = "${projectDir}/tests/test_data/FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_100reads_2.fastq"
+        
+
+                script_src_path="${projectDir}/bin/" 
+            }
+
+            workflow {
+                """
+                // define inputs of the workflow here. Example:
+                input[0] = Channel.of(tuple(params.meta, params.read_1, params.read_2))
+                """
+            }
+
+            then {
+                assert workflow.success
+                assert snapshot(workflow.out).match()
+            }
+        }
+    }
+
+    test("Should run only trimmomatic") {
+
+        when {
+            params {
+                run_trimmomatic = true
+                run_trf = false
+                run_hrr = false
+                meta = [
+                    id: "FluH1N1_SARSCoV2_hPIV1_33K_ea_P1",
+                ]
+                read_1 = "${projectDir}/tests/test_data/FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_100reads_1.fastq"
+                read_2 = "${projectDir}/tests/test_data/FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_100reads_2.fastq"
+        
+
+                script_src_path="${projectDir}/bin/" 
+            }
+
+            workflow {
+                """
+                // define inputs of the workflow here. Example:
+                input[0] = Channel.of(tuple(params.meta, params.read_1, params.read_2))
+                """
+            }
+
+            then {
+                assert workflow.success
+                assert snapshot(workflow.out).match()
+            }
+        }
+    }
+
+
 }
