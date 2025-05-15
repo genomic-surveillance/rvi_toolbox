@@ -163,7 +163,18 @@ nextflow_workflow {
 
                     // reads should be balanced, so we must have same number of lines in both mate files
                     assert path(out_ch[0][1]).readLines().size() == path(out_ch[0][2]).readLines().size()
-                    // MORE TESTS: make sure files have same number of lines, contain expected read IDs
+
+                    // we know that only one read pair should be in the output because the other two pairs
+                    // have either both mates contain repeats (pair 3) or one of the two mates has a repeat (pair 2)
+                    // so the fastq files must have 4 lines (=1read)
+                    assert path(out_ch[0][1]).readLines().size() == 4
+
+                    // the read ID of mate pair 1 is A01404:579:579:HVVNFDRX5:2:2122:28076:11569
+                    // this is the pair that has no repeats and should be in the output
+                    // there should be a "/1" version of the ID in mate file 1 and a corresponding "/2" in file 2
+                    assert path(out_ch[0][1]).readLines()[0] == "@A01404:579:579:HVVNFDRX5:2:2122:28076:11569/1"
+                    assert path(out_ch[0][2]).readLines()[0] == "@A01404:579:579:HVVNFDRX5:2:2122:28076:11569/2"
+
                 }
             }
         }
