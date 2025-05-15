@@ -1,0 +1,42 @@
+The file set
+scrubber_test_1_mate1.fastq
+scrubber_test_1_mate2.fastq
+
+was constructed to test the scrubber (human read removal) part of the preprocessing workflow.
+
+It contains three read pairs in two read mate fastq files.
+
+The pairs represent three scenarios as follows, with the base read ID given:
+1) human - human: read base ID @SRR062634.10000000 HWI-EAS110_103327062:6:50:17699:19743
+2) human - nonhuman: read base ID @SRR062634.10000001 HWI-EAS110_103327062:6:50:17699:1381
+3) nonhuman - nonhuman: read base ID @SRR062634.6 HWI-EAS110_103327062:6:1:1119:20104
+
+The outcome of a scrubber run (with option -x) on the above read pairs should be:
+1) remove pair
+2) remove pair (because one mate is human)
+3) keep pair
+
+The files were created as follows:
+Public 1000 Genomes data was downloaded from SRA:
+$ wget https://ftp.sra.ebi.ac.uk/1000g/ftp/phase3/data/HG00096/sequence_read/SRR062634_1.filt.fastq.gz
+
+scrubber was run to identify human reads and create a fastq file without human reads (-x option)
+scrub.sh -i SRR062634_1.filt.fastq -o SRR062634_1.filt_clean_removed.fastq -x
+
+IDs from input and clean file were extracted 
+$ grep "^@SR" SRR062634_1.filt.fastq | sort | uniq > SRR062634_1.filt.sorted_ids
+$ grep "^@SR" SRR062634_1.filt_clean_removed.fastq | sort | uniq > SRR062634_1.filt_clean_removed.sorted_ids
+
+human read IDs were identified
+$ comm -13 SRR062634_1.filt_clean_removed.sorted_ids SRR062634_1.filt.sorted_ids > SRR062634_1.filt_human_read_ids 
+
+picked three human reads from the fastq using IDs from file SRR062634_1.filt_human_read_ids
+picked three non-human reads from the file 
+SRR062634_1.filt_clean_removed.fastq
+
+changed read IDs to create artificial pairs in the two mate fastq files.
+
+confirmed that the reads are human/nonhuman by running scrubber again on the final test fastq file pair.
+$ scrub.sh -i scrubber_test_1_mate1.fastq -o scrubber_test_1_mate1_scrubber_out.fastq -x
+$ scrub.sh -i scrubber_test_1_mate2.fastq -o scrubber_test_1_mate2_scrubber_out.fastq -x
+-> teh expected reads (non-human) are left in the respective output files

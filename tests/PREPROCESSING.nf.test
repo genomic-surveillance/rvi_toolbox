@@ -180,5 +180,64 @@ nextflow_workflow {
         }
     }
 
+    test("read-pairs should be balanced running only scrubber") {
+        // This test is similar to "read-pairs should be balanced running only trf"
+        // but tests the workflow running scrubber (human read removal) only.
+        // A detailed description of the test data is in tests/test_data/scrubber_description.txt
+        // The file contains read pairs for the following three cases (with read base IDs)
+        // 1) human - human: read base ID @SRR062634.10000000 HWI-EAS110_103327062:6:50:17699:19743
+        // 2) human - nonhuman: read base ID @SRR062634.10000001 HWI-EAS110_103327062:6:50:17699:1381
+        // 3) nonhuman - nonhuman: read base ID @SRR062634.6 HWI-EAS110_103327062:6:1:1119:20104
+        // 
+        // The outcome of the scrubber workflow on the above read pairs should be:
+        // 1) remove pair
+        // 2) remove pair (because one mate is human)
+        // 3) keep pair
+        when {
+            params {
+                run_trimmomatic = false
+                run_trf = false
+                run_hrr = true
+                meta = [
+                    id: "scrubber_test_1",
+                ]
+                read_1 = "${projectDir}/tests/test_data/scrubber_test_1_mate1.fastq"
+                read_2 = "${projectDir}/tests/test_data/scrubber_test_1_mate2.fastq"
+
+                script_src_path="${projectDir}/bin/" 
+            }
+
+            workflow {
+                """
+                // define inputs of the workflow here. Example:
+                input[0] = Channel.of(tuple(params.meta, params.read_1, params.read_2))
+                """
+            }
+
+            then {
+                assert workflow.success
+                with(workflow.out) {
+                    // check if emitted output has been created
+                    assert out_ch != null
+
+                    // reads should be balanced, so we must have same number of lines in both mate files
+                    assert path(out_ch[0][1]).readLines().size() == path(out_ch[0][2]).readLines().size()
+
+                    // we know that only one read pair should be in the output because the other two pairs
+                    // have either both mates contain repeats (pair 3) or one of the two mates has a repeat (pair 2)
+                    // so the fastq files must have 4 lines (=1read)
+                    assert path(out_ch[0][1]).readLines().size() == 4
+
+                    // the read ID of mate pair 1 is A01404:579:579:HVVNFDRX5:2:2122:28076:11569
+                    // this is the pair that has no repeats and should be in the output
+                    // there should be a "/1" version of the ID in mate file 1 and a corresponding "/2" in file 2
+                    assert path(out_ch[0][1]).readLines()[0] == "@SRR062634.6 HWI-EAS110_103327062:6:1:1119:20104/1"
+                    assert path(out_ch[0][2]).readLines()[0] == "@SRR062634.6 HWI-EAS110_103327062:6:1:1119:20104/2"
+
+                }
+            }
+        }
+    }
+
 
 }
