@@ -1,4 +1,33 @@
 {
+    "read-pairs should be balanced running only trf": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "trf_test_1"
+                        },
+                        "trf_test_1_trf_1.fastq:md5,7fba94172828e1be79d86463cb250c76",
+                        "trf_test_1_trf_2.fastq:md5,c66b1a985e36c97f5c0768515d04c193"
+                    ]
+                ],
+                "out_ch": [
+                    [
+                        {
+                            "id": "trf_test_1"
+                        },
+                        "trf_test_1_trf_1.fastq:md5,7fba94172828e1be79d86463cb250c76",
+                        "trf_test_1_trf_2.fastq:md5,c66b1a985e36c97f5c0768515d04c193"
+                    ]
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.3"
+        },
+        "timestamp": "2025-05-15T15:52:55.119881"
+    },
     "Should run without hrr": {
         "content": [
             {

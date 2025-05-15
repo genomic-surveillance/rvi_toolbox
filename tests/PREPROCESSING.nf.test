@@ -97,35 +97,6 @@ nextflow_workflow {
         }
     }
 
-    test("Should run only trf") {
-        when {
-            params {
-                run_trimmomatic = false
-                run_trf = true
-                run_hrr = false
-                meta = [
-                    id: "trf_test_1",
-                ]
-                read_1 = "${projectDir}/tests/test_data/trf_test_1_mate1.fastq"
-                read_2 = "${projectDir}/tests/test_data/trf_test_1_mate2.fastq"
-
-                script_src_path="${projectDir}/bin/" 
-            }
-
-            workflow {
-                """
-                // define inputs of the workflow here. Example:
-                input[0] = Channel.of(tuple(params.meta, params.read_1, params.read_2))
-                """
-            }
-
-            then {
-                assert workflow.success
-                assert snapshot(workflow.out).match()
-            }
-        }
-    }
-
     test("read-pairs should be balanced running only trf") {
         // In this test we use a test set of two read mate files that were constructed 
         // to contain the following cases (read ID shown as well):
@@ -176,6 +147,7 @@ nextflow_workflow {
                     assert path(out_ch[0][2]).readLines()[0] == "@A01404:579:579:HVVNFDRX5:2:2122:28076:11569/2"
 
                 }
+                assert snapshot(workflow.out).match()
             }
         }
     }
@@ -239,5 +211,31 @@ nextflow_workflow {
         }
     }
 
+        test("read-pairs with invalid read ids should fail on trf") {
+        when {
+            params {
+                run_trimmomatic = false
+                run_trf = true
+                run_hrr = false
+                meta = [
+                    id: "trf_test_1",
+                ]
+                read_1 = "${projectDir}/tests/test_data/trf_test_1_mate1_invalid_readid.fastq"
+                read_2 = "${projectDir}/tests/test_data/trf_test_1_mate2_invalid_readid.fastq"
 
+                script_src_path="${projectDir}/bin/" 
+            }
+
+            workflow {
+                """
+                // define inputs of the workflow here. Example:
+                input[0] = Channel.of(tuple(params.meta, params.read_1, params.read_2))
+                """
+            }
+
+            then {
+                assert workflow.failed
+            }
+        }
+    }
 }
