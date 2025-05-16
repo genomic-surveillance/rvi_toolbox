@@ -1,0 +1,23 @@
+This files descibes the test data set for TRF comprising two files:
+trf_test_1_mate1.fastq
+trf_test_1_mate2.fastq
+
+The reads in this file have been created to test three scenarios: 
+1) both reads have no repeats -> should be in the output
+2) one read has repeats, the other does not -> should not be in the output
+3) both reads have repeats -> should not be in the output
+
+The read pairs in the files are in this order:
+1) norepeat - norepeat: ID A01404:579:579:HVVNFDRX5:2:2122:28076:11569
+2) norepeat - repeat: ID A01404:579:HVVNFDRX5:2:2122:28076:11569
+3) repeat - repeat: ID A01404:579:HVVNFDRX5:2:2110:32660:9048
+
+Creation of the read files
+A real-world production run that used kneaddata (not used anymore) was used as the starting point. Reads identified by kneaddata as having repeats were run through stand-alone trf with the following parameters that are used in the pipeline:
+$ trf FILE.fasta 2 7 7 80 10 50 500 -h -ngs 
+
+This identified a single sequence with a repeat according to the above parameters. 
+The sequence was used as-is and with some added bases at front to create the "repeat" 
+sequences for the test files. Read IDs were changed to create three read pairs in two mate files with 
+matching read ID and mate number supplied as "/NUM".
+The resulting files were run through trf with above command to confirm the presence/absence of repeats.

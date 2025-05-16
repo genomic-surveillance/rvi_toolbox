@@ -97,5 +97,86 @@ nextflow_workflow {
         }
     }
 
+    test("read-pairs should be balanced running only trf") {
+        // In this test we use a test set of two read mate files that were constructed 
+        // to contain the following cases (read ID shown as well):
+        //      1) norepeat - norepeat: ID A01404:579:579:HVVNFDRX5:2:2122:28076:11569
+        //      2) norepeat - repeat: ID A01404:579:HVVNFDRX5:2:2122:28076:11569
+        //      3) repeat - repeat: ID A01404:579:HVVNFDRX5:2:2110:32660:9048
+        // Expected outcome: TRF should remove 1 read from pair 2 and both reads from pair 3
+        // and the workflow should balance read pairs such that only pair 1 should come through
+        when {
+            params {
+                run_trimmomatic = false
+                run_trf = true
+                run_hrr = false
+                meta = [
+                    id: "trf_test_1",
+                ]
+                read_1 = "${projectDir}/tests/test_data/trf_test_1_mate1.fastq"
+                read_2 = "${projectDir}/tests/test_data/trf_test_1_mate2.fastq"
 
+                script_src_path="${projectDir}/bin/" 
+            }
+
+            workflow {
+                """
+                // define inputs of the workflow here. Example:
+                input[0] = Channel.of(tuple(params.meta, params.read_1, params.read_2))
+                """
+            }
+
+            then {
+                assert workflow.success
+                with(workflow.out) {
+                    // check if emitted output has been created
+                    assert out_ch != null
+
+                    // reads should be balanced, so we must have same number of lines in both mate files
+                    assert path(out_ch[0][1]).readLines().size() == path(out_ch[0][2]).readLines().size()
+
+                    // we know that only one read pair should be in the output because the other two pairs
+                    // have either both mates contain repeats (pair 3) or one of the two mates has a repeat (pair 2)
+                    // so the fastq files must have 4 lines (=1read)
+                    assert path(out_ch[0][1]).readLines().size() == 4
+
+                    // the read ID of mate pair 1 is A01404:579:579:HVVNFDRX5:2:2122:28076:11569
+                    // this is the pair that has no repeats and should be in the output
+                    // there should be a "/1" version of the ID in mate file 1 and a corresponding "/2" in file 2
+                    assert path(out_ch[0][1]).readLines()[0] == "@A01404:579:579:HVVNFDRX5:2:2122:28076:11569/1"
+                    assert path(out_ch[0][2]).readLines()[0] == "@A01404:579:579:HVVNFDRX5:2:2122:28076:11569/2"
+
+                }
+                assert snapshot(workflow.out).match()
+            }
+        }
+    }
+
+        test("read-pairs with invalid read ids should fail on trf") {
+        when {
+            params {
+                run_trimmomatic = false
+                run_trf = true
+                run_hrr = false
+                meta = [
+                    id: "trf_test_1",
+                ]
+                read_1 = "${projectDir}/tests/test_data/trf_test_1_mate1_invalid_readid.fastq"
+                read_2 = "${projectDir}/tests/test_data/trf_test_1_mate2_invalid_readid.fastq"
+
+                script_src_path="${projectDir}/bin/" 
+            }
+
+            workflow {
+                """
+                // define inputs of the workflow here. Example:
+                input[0] = Channel.of(tuple(params.meta, params.read_1, params.read_2))
+                """
+            }
+
+            then {
+                assert workflow.failed
+            }
+        }
+    }
 }

@@ -9,7 +9,7 @@ def read_trf(file_path):
             if line.startswith('@'):  # Read identifier lines start with '@'
                 read_id = line.strip()
                 # Remove the trailing number (1 or 2) from the read identifier
-                read_id_base = read_id.rsplit(' ', 1)[0]  # Get the part before the last space
+                read_id_base = read_id.rsplit('/', 1)[0]  # Get the part before the slash
                 reads[read_id_base] = read_id  # Store the original read ID
     return reads
 
@@ -33,17 +33,24 @@ def process_read(reads_source, reads_target, read_id_base, output_file, unpaired
 
         # Generate the equivalent read ID by replacing suffixes
         source_suffix, target_suffix = suffix_replace
-        equivalent_suffix = reads_source[read_id_base].split(" ")[1].replace(source_suffix, target_suffix)
-        equivalent_read = f"{reads_source[read_id_base].split(' ')[0]} {equivalent_suffix}"
+
+        # sanity check read format
+        assert(len(reads_source[read_id_base].split("/")) == 2)
+
+        equivalent_suffix = reads_source[read_id_base].split("/")[1].replace(source_suffix, target_suffix)
+        equivalent_read = f"{reads_source[read_id_base].split('/')[0]}/{equivalent_suffix}"
 
         # Check if the equivalent read exists in the target
         if equivalent_read not in reads_target:
+            # store on the combined trf (reads to be removed)
             output_file.write(equivalent_read + '\n')
+            # store on the unpaired_reads (for the record)
             unpaired_reads_fl.write(equivalent_read + '\n')
 
-    except IndexError:
-        print(f"WARN: {reads_source[read_id_base]} is not a valid read ID. Skipping it.")
-
+    except AssertionError:
+        print(f"ERROR: {reads_source[read_id_base]} is not a valid read ID.")
+        print(f"       example of a valid read format: '@A01404:579:HVVNFDRX5:2:2122:28076:11569/1'")
+        exit(1)
 
 def generate_combined_trf(trf1_path, trf2_path, output_path, unpaired_path):
     """Generate a new TRF file that includes equivalent reads from both TRF files."""
@@ -65,7 +72,7 @@ def generate_combined_trf(trf1_path, trf2_path, output_path, unpaired_path):
                     read_id_base=read_id_base,
                     output_file=output_file,
                     unpaired_reads_fl=unpaired_reads_fl,
-                    suffix_replace=("1:", "2:")
+                    suffix_replace=("1", "2")
                 )
                 continue
 
@@ -76,7 +83,7 @@ def generate_combined_trf(trf1_path, trf2_path, output_path, unpaired_path):
                     read_id_base=read_id_base,
                     output_file=output_file,
                     unpaired_reads_fl=unpaired_reads_fl,
-                    suffix_replace=("2:", "1:")
+                    suffix_replace=("2", "1")
                 )
 
 if __name__ == "__main__":

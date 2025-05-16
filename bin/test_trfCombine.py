@@ -7,20 +7,20 @@ from trfCombine import generate_combined_trf
 def create_temp_trf_files(tmp_path):
     """Fixture to create temporary TRF files for testing."""
     trf1_content = (
-        "@SEQ_ID_1 1:N:0:1\n"
+        "@SEQ_ID_1/1\n"
         "1 76 1 76.0 1 100 0 152 0 0 0 100 0.00 T TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT . .\n"
-        "@SEQ_ID_2 1:N:0:1\n"
+        "@SEQ_ID_2/1\n"
         "1 75 1 75.0 1 100 0 150 100 0 0 0 0.00 A AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA . .\n"
-        "@SEQ_ID_4 1:N:0:1\n"
+        "@SEQ_ID_4/1\n"
         "1 75 1 75.0 1 100 0 150 100 0 0 0 0.00 A AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA . .\n"
 
     )
     trf2_content = (
-        "@SEQ_ID_1 2:N:0:1\n"
+        "@SEQ_ID_1/2\n"
         "1 74 1 74.0 1 100 0 148 100 0 0 0 0.00 A AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA . .\n"
-        "@SEQ_ID_2 2:N:0:1\n"
+        "@SEQ_ID_2/2\n"
         "1 75 1 75.0 1 100 0 150 100 0 0 0 0.00 A AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA . .\n"
-        "@SEQ_ID_3 2:N:0:1\n"
+        "@SEQ_ID_3/2\n"
         "1 76 1 76.0 1 100 0 152 0 0 0 100 0.00 T TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT . .\n"
     )
     
@@ -45,14 +45,14 @@ def test_successful_combination(create_temp_trf_files):
     
     # Check the content of the combined TRF file
     expected_combined_content = (
-    "@SEQ_ID_1 1:N:0:1\n"
-    "@SEQ_ID_1 2:N:0:1\n"
-    "@SEQ_ID_2 1:N:0:1\n"
-    "@SEQ_ID_2 2:N:0:1\n"
-    "@SEQ_ID_3 2:N:0:1\n"
-    "@SEQ_ID_3 1:N:0:1\n"
-    "@SEQ_ID_4 1:N:0:1\n"
-    "@SEQ_ID_4 2:N:0:1\n"
+    "@SEQ_ID_1/1\n"
+    "@SEQ_ID_1/2\n"
+    "@SEQ_ID_2/1\n"
+    "@SEQ_ID_2/2\n"
+    "@SEQ_ID_3/2\n"
+    "@SEQ_ID_3/1\n"
+    "@SEQ_ID_4/1\n"
+    "@SEQ_ID_4/2\n"
     )
     
     with open(output, 'r') as f:
@@ -74,10 +74,10 @@ def test_unpaired_reads(create_temp_trf_files):
     
     # Check the content of the unpaired TRF file
     expected_unpaired_content = (
-    "@SEQ_ID_1 2:N:0:1\n"
-    "@SEQ_ID_2 2:N:0:1\n"
-    "@SEQ_ID_3 1:N:0:1\n"
-    "@SEQ_ID_4 2:N:0:1\n"
+    "@SEQ_ID_1/2\n"
+    "@SEQ_ID_2/2\n"
+    "@SEQ_ID_3/1\n"
+    "@SEQ_ID_4/2\n"
     )
     
     with open(unpaired, 'r') as f:
