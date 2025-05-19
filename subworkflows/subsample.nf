@@ -9,20 +9,12 @@ workflow SUBSAMPLE_ITER {
     //if number of reads is above subsample limit put to a channel branch into a channel for subsampling
     //if below limit branch into a seperate channel where no subsampling is done and instead skips the step
     verified_fastq_ch.combine(subsample_limit_ch)
-    .branch{ meta, read_1, read_2, subsample_limit ->
-        // count reads
-        def read_count = read_1.countFastq()
-
+    .branch{ meta, read_1, read_2, read_count, subsample_limit ->
         needs_subsampling: read_count > subsample_limit
             return tuple ( meta, read_1, read_2 )
-        empty_fastqs: read_count == 0
-            return tuple (meta, read_1, read_2)
         already_below_subsample: true
             return tuple ( meta, read_1, read_2 )
     }.set{ subsampling_check }
-
-    // raise warning for empty fastqs
-    subsampling_check.empty_fastqs.view(it -> log.warn("Excluding ${it[0].ID} as ${it[1]} have no reads"))
 
     iterations = (1 .. params.subsample_iterations).toList()
 
