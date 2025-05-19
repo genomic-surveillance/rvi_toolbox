@@ -4,6 +4,8 @@ include {TRF} from "../modules/trf.nf"
 include {RMREPEATFROMFASTQ} from "../modules/rmRepeatFromFq.nf"
 include {SRA_HUMAN_SCRUBBER} from "../modules/scrubber.nf"
 
+include {SEQTK_MERGEPE; SEQTK_SPLIT} from "../modules/seqtk.nf"
+
 workflow PREPROCESSING {
     /*
     -----------------------------------------------------------------
@@ -63,21 +65,28 @@ workflow PREPROCESSING {
 
             // if only scrubber is on
             if ((!params.run_trimmomatic) && (!params.run_trf)){
-                scrubber_In_ch = reads_ch
+                hrr_In_ch = reads_ch
             }
 
             // if trimmomatic and no trf
             if ((params.run_trimmomatic) && (!params.run_trf)){
-                scrubber_In_ch = trimmomatic_Out_ch
+                hrr_In_ch = trimmomatic_Out_ch
             }
 
             // if trf is true
             if (params.run_trf){
-                scrubber_In_ch = trf_Out_ch
+                hrr_In_ch = trf_Out_ch
             }
+            // generate interleaved fq for scrubber
+            SEQTK_MERGEPE(hrr_In_ch)
 
-            SRA_HUMAN_SCRUBBER(scrubber_In_ch)
-            scrubber_Out_ch = SRA_HUMAN_SCRUBBER.out // tuple(meta, reads_clean_1, reads_clean_2)
+            // run hrr
+            SRA_HUMAN_SCRUBBER(SEQTK_MERGEPE.out)
+
+            // deinterleaved fastq files
+            SEQTK_SPLIT(SRA_HUMAN_SCRUBBER.out, "clean")
+
+            scrubber_Out_ch = SEQTK_SPLIT.out // tuple(meta, reads_clean_1, reads_clean_2)
         }
 
         // setup output channel
