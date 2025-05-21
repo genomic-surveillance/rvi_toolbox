@@ -3,7 +3,7 @@ include {FASTQ2FASTA} from "../modules/fastq2fasta.nf"
 include {TRF} from "../modules/trf.nf"
 include {RMREPEATFROMFASTQ} from "../modules/rmRepeatFromFq.nf"
 include {SRA_HUMAN_SCRUBBER} from "../modules/scrubber.nf"
-
+include {COMPRESS_READS} from "../modules/helper_processes.nf"
 include {SEQTK_MERGEPE; SEQTK_SPLIT} from "../modules/seqtk.nf"
 
 workflow PREPROCESSING {
@@ -87,6 +87,7 @@ workflow PREPROCESSING {
             SEQTK_SPLIT(SRA_HUMAN_SCRUBBER.out, "clean")
 
             scrubber_Out_ch = SEQTK_SPLIT.out // tuple(meta, reads_clean_1, reads_clean_2)
+
         }
 
         // setup output channel
@@ -103,6 +104,10 @@ workflow PREPROCESSING {
             out_ch = scrubber_Out_ch // tuple (meta, reads_clean_1, reads_clean_2)
         }
 
+        // publish compressed clean reads
+        if (params.publish_clean_reads){
+            COMPRESS_READS(out_ch) // tuple(meta, reads_clean_1.gz, reads_clean_2.gz)
+        }
         // remove unpaired sequences at the end of the process
         
 
