@@ -49,6 +49,8 @@ process SEQTK_SPLIT{
 
     container 'quay.io/biocontainers/seqtk:1.4--he4a0461_2'
 
+    publishDir enabled: params.debug_preproc_output, "${params.results_dir}/${meta.id}/preprocessing/", mode: "copy", pattern:"*.fq"
+
     input:
         tuple val(meta), path(interleaved_fq)
         val(suffix)
