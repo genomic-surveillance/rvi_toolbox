@@ -106,10 +106,9 @@ workflow PREPROCESSING {
 
         // publish compressed clean reads
         if (params.publish_clean_reads){
-            COMPRESS_READS(out_ch) // tuple(meta, reads_clean_1.gz, reads_clean_2.gz)
+            COMPRESS_READS(out_ch, "pre_processed") // tuple(meta, reads_clean_1.gz, reads_clean_2.gz)
         }
         // remove unpaired sequences at the end of the process
-        
 
     emit:
         out_ch // tuple (meta, reads_1, reads_2)
