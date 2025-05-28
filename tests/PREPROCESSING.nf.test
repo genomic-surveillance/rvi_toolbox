@@ -11,12 +11,14 @@ nextflow_workflow {
                 run_trimmomatic = true
                 run_trf = true
                 run_hrr = true
+                debug_preproc_output = false
+                publish_clean_reads = true
+                results_dir = "${launchDir}/results/"
                 meta = [
                     id: "FluH1N1_SARSCoV2_hPIV1_33K_ea_P1",
                 ]
                 read_1 = "${projectDir}/tests/test_data/FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_100reads_1.fastq"
                 read_2 = "${projectDir}/tests/test_data/FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_100reads_2.fastq"
-        
 
                 script_src_path="${projectDir}/bin/" 
             }
