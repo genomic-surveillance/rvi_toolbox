@@ -213,7 +213,7 @@ nextflow_workflow {
         }
     }
 
-        test("read-pairs with invalid read ids should fail on trf") {
+    test("read-pairs with invalid read ids should fail on trf") {
         when {
             params {
                 run_trimmomatic = false
@@ -237,6 +237,113 @@ nextflow_workflow {
 
             then {
                 assert workflow.failed
+            }
+        }
+    }
+
+    // Regardless of the modules (trimmomatic/trf/scrubber) being selected, the output files are ow always named the same
+    test("Check output name consistency when running only trimmomatic") {
+        when {
+            params {
+                run_trimmomatic = true
+                run_trf = false
+                run_hrr = false
+                debug_preproc_output = false
+                publish_clean_reads = true
+                results_dir = "${launchDir}/results/"
+                meta = [
+                    id: "FluH1N1_SARSCoV2_hPIV1_33K_ea_P1",
+                ]
+                read_1 = "${projectDir}/tests/test_data/FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_100reads_1.fastq"
+                read_2 = "${projectDir}/tests/test_data/FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_100reads_2.fastq"
+
+                script_src_path="${projectDir}/bin/" 
+
+            }
+
+            workflow {
+                """
+                // define inputs of the workflow here. Example:
+                input[0] = Channel.of(tuple(params.meta, params.read_1, params.read_2))
+                """
+            }
+
+            then {
+                assert workflow.success
+                // Check that output files with expected suffix exist in the published directory
+                assert file("${params.results_dir}/${params.meta.id}/preprocessing/${params.meta.id}_1_pre_processed.fq.gz").exists()
+                assert file("${params.results_dir}/${params.meta.id}/preprocessing/${params.meta.id}_2_pre_processed.fq.gz").exists()
+            }
+        }
+    }
+
+    test("Check output name consistency when running only trf") {
+        when {
+            params {
+                run_trimmomatic = false
+                run_trf = true
+                run_hrr = false
+                debug_preproc_output = false
+                publish_clean_reads = true
+                results_dir = "${launchDir}/results/"
+                meta = [
+                    id: "FluH1N1_SARSCoV2_hPIV1_33K_ea_P1",
+                ]
+                read_1 = "${projectDir}/tests/test_data/FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_100reads_1.fastq"
+                read_2 = "${projectDir}/tests/test_data/FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_100reads_2.fastq"
+
+                script_src_path="${projectDir}/bin/" 
+
+            }
+
+            workflow {
+                """
+                // define inputs of the workflow here. Example:
+                input[0] = Channel.of(tuple(params.meta, params.read_1, params.read_2))
+                """
+            }
+
+            then {
+                assert workflow.success
+                // Check that output files with expected suffix exist in the published directory
+                assert file("${params.results_dir}/${params.meta.id}/preprocessing/${params.meta.id}_1_pre_processed.fq.gz").exists()
+                assert file("${params.results_dir}/${params.meta.id}/preprocessing/${params.meta.id}_2_pre_processed.fq.gz").exists()
+            }
+        }
+    }
+
+        //Regardless of the modules (trf/scrubber) being selected, the output files are ow always named the same
+    test("Check output name consistency when running only hrr") {
+        when {
+            params {
+                run_trimmomatic = true
+                run_trf = false
+                run_hrr = true
+                debug_preproc_output = false
+                publish_clean_reads = true
+                results_dir = "${launchDir}/results/"
+                meta = [
+                    id: "FluH1N1_SARSCoV2_hPIV1_33K_ea_P1",
+                ]
+                read_1 = "${projectDir}/tests/test_data/FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_100reads_1.fastq"
+                read_2 = "${projectDir}/tests/test_data/FluH1N1_SARSCoV2_hPIV1_33K_ea_P1_100reads_2.fastq"
+
+                script_src_path="${projectDir}/bin/" 
+
+            }
+
+            workflow {
+                """
+                // define inputs of the workflow here. Example:
+                input[0] = Channel.of(tuple(params.meta, params.read_1, params.read_2))
+                """
+            }
+
+            then {
+                assert workflow.success
+                // Check that output files with expected suffix exist in the published directory
+                assert file("${params.results_dir}/${params.meta.id}/preprocessing/${params.meta.id}_1_pre_processed.fq.gz").exists()
+                assert file("${params.results_dir}/${params.meta.id}/preprocessing/${params.meta.id}_2_pre_processed.fq.gz").exists()
             }
         }
     }
