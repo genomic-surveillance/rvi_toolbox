@@ -6,10 +6,10 @@ process METADATA {
     conda 'anaconda::pandas=2.2.1'
     container 'quay.io/sangerpathogens/pandas:2.2.1'
 
-    publishDir "${params.outdir}/", mode: 'copy', overwrite: true, pattern: "${timestampout}"
+    publishDir "${params.results_dir}/", mode: 'copy', overwrite: true, pattern: "${timestampout}"
 
     input:
-    path(metadata)
+    val(metadata)
     val(metadata_tag)
 
     output:

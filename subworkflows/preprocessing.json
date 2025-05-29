@@ -1,6 +1,12 @@
 {
     "pipeline": "PREPROCESSING",
     "params": {
+        "General pre-processing options":{
+            "publish_clean_reads": {
+                "default": "true",
+                "help_text": "should the pre-processed reads be saved (gzip-compressed) in the preprocessing/ output folder."
+            }
+        },
         "Trimmomatic Options": {
             "run_trimmomatic": {
                 "default": "true",
@@ -11,7 +17,7 @@
                 "help_text": "Number of threads to use for Trimmomatic"
             },
             "publish_trimmed_reads": {
-                "default": "true",
+                "default": "false",
                 "help_text": "Publish trimmed reads"
             },
             "adapter_fasta": {

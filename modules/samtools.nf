@@ -6,8 +6,8 @@ process COLLATE_FASTQ {
     conda 'bioconda::samtools=1.17'
     container 'quay.io/biocontainers/samtools:1.17--hd87286a_2'
 
-    publishDir path: { if ("${params.save_method}" == "nested") "${params.outdir}/${meta.ID}/${params.raw_reads_prefix}fastqs/" else "${params.outdir}/fastqs/" } , enabled: params.save_fastqs, mode: 'copy', overwrite: true, pattern: "*_1.fastq.gz", saveAs: { filename -> "${params.raw_reads_prefix}${forward_fastq}" }
-    publishDir path: { if ("${params.save_method}" == "nested") "${params.outdir}/${meta.ID}/${params.raw_reads_prefix}fastqs/" else "${params.outdir}/fastqs/" } , enabled: params.save_fastqs, mode: 'copy', overwrite: true, pattern: "*_2.fastq.gz", saveAs: { filename -> "${params.raw_reads_prefix}${reverse_fastq}" }
+    publishDir path: { if ("${params.save_method}" == "nested") "${params.results_dir}/${meta.id}/${params.raw_reads_prefix}fastqs/" else "${params.results_dir}/fastqs/" } , enabled: params.save_fastqs, mode: 'copy', overwrite: true, pattern: "*_1.fastq.gz", saveAs: { filename -> "${params.raw_reads_prefix}${forward_fastq}" }
+    publishDir path: { if ("${params.save_method}" == "nested") "${params.results_dir}/${meta.id}/${params.raw_reads_prefix}fastqs/" else "${params.results_dir}/fastqs/" } , enabled: params.save_fastqs, mode: 'copy', overwrite: true, pattern: "*_2.fastq.gz", saveAs: { filename -> "${params.raw_reads_prefix}${reverse_fastq}" }
 
 
     input:
@@ -19,8 +19,8 @@ process COLLATE_FASTQ {
     path(cram), emit: remove_channel
 
     script:
-    forward_fastq = "${meta.ID}_1.fastq.gz"
-    reverse_fastq = "${meta.ID}_2.fastq.gz"
+    forward_fastq = "${meta.id}_1.fastq.gz"
+    reverse_fastq = "${meta.id}_2.fastq.gz"
     """
     samtools collate -O \
     -f ${cram} \
@@ -41,8 +41,8 @@ process COMBINE_FASTQ {
     conda 'bioconda::samtools=1.17'
     container 'quay.io/biocontainers/samtools:1.17--hd87286a_2'
 
-    publishDir path: { if ("${params.save_method}" == "nested") "${params.outdir}/${meta.ID}/${params.raw_reads_prefix}fastqs/" else "${params.outdir}/fastqs/" } , enabled: params.save_fastqs, mode: 'copy', overwrite: true, pattern: "*_1.fastq.gz", saveAs: { filename -> "${params.raw_reads_prefix}${forward_fastq}.gz" }
-    publishDir path: { if ("${params.save_method}" == "nested") "${params.outdir}/${meta.ID}/${params.raw_reads_prefix}fastqs/" else "${params.outdir}/fastqs/" } , enabled: params.save_fastqs, mode: 'copy', overwrite: true, pattern: "*_2.fastq.gz", saveAs: { filename -> "${params.raw_reads_prefix}${reverse_fastq}.gz" }
+    publishDir path: { if ("${params.save_method}" == "nested") "${params.results_dir}/${meta.id}/${params.raw_reads_prefix}fastqs/" else "${params.results_dir}/fastqs/" } , enabled: params.save_fastqs, mode: 'copy', overwrite: true, pattern: "*_1.fastq.gz", saveAs: { filename -> "${params.raw_reads_prefix}${forward_fastq}.gz" }
+    publishDir path: { if ("${params.save_method}" == "nested") "${params.results_dir}/${meta.id}/${params.raw_reads_prefix}fastqs/" else "${params.results_dir}/fastqs/" } , enabled: params.save_fastqs, mode: 'copy', overwrite: true, pattern: "*_2.fastq.gz", saveAs: { filename -> "${params.raw_reads_prefix}${reverse_fastq}.gz" }
     
     input:
         tuple val(meta), val(read_1_paths), val(read_2_paths) // read_*_paths are strings containing multiple read file paths separated by a single space character
@@ -51,8 +51,8 @@ process COMBINE_FASTQ {
         tuple val(meta), path("${forward_fastq}.gz"), path("${reverse_fastq}.gz"), emit: fastq_channel
 
     script:
-    forward_fastq = "${meta.ID}_1.fastq"
-    reverse_fastq = "${meta.ID}_2.fastq"
+    forward_fastq = "${meta.id}_1.fastq"
+    reverse_fastq = "${meta.id}_2.fastq"
     """
     zcat ${read_1_paths} > ${forward_fastq}
     zcat ${read_2_paths} > ${reverse_fastq}

@@ -5,7 +5,7 @@ params.trimmomatic_options = "ILLUMINACLIP:${params.adapter_fasta}:2:10:7:1 CROP
 params.publish_trimmed_reads = true
 params.trimmomatic_threads = 4
 
-process run_trimmomatic {
+process TRIMMOMATIC {
     tag "${meta.id}"
     label 'mem_1'
     label 'time_1'
@@ -14,8 +14,8 @@ process run_trimmomatic {
     container "quay.io/biocontainers/trimmomatic:0.39--1"
 
     // publish only the gz version
-    publishDir enabled: params.publish_trimmed_reads, mode: 'symlink', failOnError: true, pattern: "${output_1}.gz", path: "${params.outdir}/${meta.id}/preprocessing/trimmed_reads/"
-    publishDir enabled: params.publish_trimmed_reads, mode: 'symlink', failOnError: true, pattern: "${output_2}.gz", path: "${params.outdir}/${meta.id}/preprocessing/trimmed_reads/"
+    publishDir enabled: params.publish_trimmed_reads, mode: 'copy', failOnError: true, pattern: "${output_1_gz}", path: "${params.results_dir}/${meta.id}/preprocessing/trimmed_reads/"
+    publishDir enabled: params.publish_trimmed_reads, mode: 'copy', failOnError: true, pattern: "${output_2_gz}", path: "${params.results_dir}/${meta.id}/preprocessing/trimmed_reads/"
 
     input:
     tuple val(meta), path(extracted_R1), path(extracted_R2)
@@ -38,7 +38,7 @@ process run_trimmomatic {
     ${params.trimmomatic_options}
     gzip -c ${output_1} > ${output_1}.tmp.gz
     gzip -c ${output_2} > ${output_2}.tmp.gz
-    mv ${output_1}.tmp.gz ${output_1}.gz
-    mv ${output_2}.tmp.gz ${output_2}.gz
+    mv ${output_1}.tmp.gz ${output_1_gz}
+    mv ${output_2}.tmp.gz ${output_2_gz}
     """
 }

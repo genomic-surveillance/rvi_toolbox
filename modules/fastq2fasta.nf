@@ -1,7 +1,7 @@
 params.script_src_path="${projectDir}/rvi_toolbox/bin/" 
 
 
-process run_fastq2fasta {
+process FASTQ2FASTA {
     /*
     *             Process: fastq_to_fasta
 

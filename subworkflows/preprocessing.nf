@@ -1,8 +1,10 @@
-include {run_trimmomatic} from "../modules/run_trimmomatic.nf"
-include {run_fastq2fasta} from "../modules/run_fastq2fasta.nf"
-include {run_trf} from "../modules/run_trf.nf"
-include {run_rmRepeatFromFq} from "../modules/run_rmRepeatFromFq.nf"
-include {run_sra_human_scrubber} from "../modules/run_scrubber.nf"
+include {TRIMMOMATIC} from "../modules/trimmomatic.nf"
+include {FASTQ2FASTA} from "../modules/fastq2fasta.nf"
+include {TRF} from "../modules/trf.nf"
+include {RMREPEATFROMFASTQ} from "../modules/rmRepeatFromFq.nf"
+include {SRA_HUMAN_SCRUBBER} from "../modules/scrubber.nf"
+include {COMPRESS_READS} from "../modules/helper_processes.nf"
+include {SEQTK_MERGEPE; SEQTK_SPLIT} from "../modules/seqtk.nf"
 
 workflow PREPROCESSING {
     /*
@@ -14,32 +16,36 @@ workflow PREPROCESSING {
 
     take:
 
-        sample_taxid_ch // tuple (meta, reads)
+        reads_ch // tuple (meta, read_1, read_2)
 
     main:
-        reads_ch = sample_taxid_ch.map{meta, reads -> tuple (meta, reads[0], reads[1])}
         // run trimmomatic
         if (params.run_trimmomatic){
-            run_trimmomatic(reads_ch)
-            reads_ch = run_trimmomatic.out.paired_channel // tuple (meta, read_1, read_2)
+            TRIMMOMATIC(reads_ch)
+            trimmomatic_Out_ch = TRIMMOMATIC.out.paired_channel // tuple (meta, read_trim_1, read_trim_2)
         }
 
         // run trf
         if (params.run_trf){
+            if (params.run_trimmomatic){
+                fastq2fasta_in_ch = trimmomatic_Out_ch
+            } else {
+                fastq2fasta_in_ch = reads_ch
+            }
             
             // preapare fastq channel to be join by id
-            reads_ch.map{meta, fq_1, fq_2 -> 
+            fastq2fasta_in_ch.map{meta, fq_1, fq_2 -> 
                 tuple (meta.id, meta, [fq_1, fq_2])
                 }
                 .set {fqs_ch}
             
             // convert
-            run_fastq2fasta(reads_ch)
-            run_fastq2fasta.out // tuple (meta, fasta_1, fasta_2)
+            FASTQ2FASTA(fastq2fasta_in_ch)
+            FASTQ2FASTA.out // tuple (meta, fasta_1, fasta_2)
                 | set {trf_in_ch}
             
-            run_trf(trf_in_ch)
-            run_trf.out.paired_trf // tuple (meta, trf_out_1, trf_out_2)
+            TRF(trf_in_ch)
+            TRF.out.paired_trf // tuple (meta, trf_out_1, trf_out_2)
                 | map {meta, trf_out_1, trf_out_2 -> 
                     tuple (meta.id,[trf_out_1, trf_out_2])
                  }
@@ -49,22 +55,64 @@ workflow PREPROCESSING {
                 | join(trf_ch) // tuple (meta.id, meta, [fqs], [trfs_out])
                 | map {id, meta, fqs, trfs -> tuple(meta, fqs[0], fqs[1], trfs[0], trfs[1])}
                 | set {rmTRFfromFq_In_ch}
-            run_rmRepeatFromFq(rmTRFfromFq_In_ch)
-            run_rmRepeatFromFq.out.fastqs
-                | set {reads_ch} // tuple (meta, trf_fq_1, trf_fq_2)
+            RMREPEATFROMFASTQ(rmTRFfromFq_In_ch)
+            RMREPEATFROMFASTQ.out.fastqs
+                | set {trf_Out_ch} // tuple (meta, trf_fq_1, trf_fq_2)
         }
 
         // run human-sra-scrubber
         if (params.run_hrr){
-            run_sra_human_scrubber(reads_ch)
-            reads_ch = run_sra_human_scrubber.out
-        }
-    reads_ch
-      .map{meta, reads_1, reads_2 -> tuple(meta, [reads_1, reads_2])}
-      .set {out_ch}
-    emit:
-        out_ch // tuple (meta, fastq_pair)
 
+            // if only scrubber is on
+            if ((!params.run_trimmomatic) && (!params.run_trf)){
+                hrr_In_ch = reads_ch
+            }
+
+            // if trimmomatic and no trf
+            if ((params.run_trimmomatic) && (!params.run_trf)){
+                hrr_In_ch = trimmomatic_Out_ch
+            }
+
+            // if trf is true
+            if (params.run_trf){
+                hrr_In_ch = trf_Out_ch
+            }
+            // generate interleaved fq for scrubber
+            SEQTK_MERGEPE(hrr_In_ch)
+
+            // run hrr
+            SRA_HUMAN_SCRUBBER(SEQTK_MERGEPE.out)
+
+            // deinterleaved fastq files
+            SEQTK_SPLIT(SRA_HUMAN_SCRUBBER.out, "clean")
+
+            scrubber_Out_ch = SEQTK_SPLIT.out // tuple(meta, reads_clean_1, reads_clean_2)
+
+        }
+
+        // setup output channel
+        // if trimmomatics on, trf off and scrubber off
+        if ((params.run_trimmomatic) && (!params.run_trf) && (!params.run_hrr)){
+            out_ch = trimmomatic_Out_ch // tuple (meta, reads_trim_1, reads_trim_2)
+        }
+        // if trf on, scrubber off
+        if ((params.run_trf) && (!params.run_hrr)){
+            out_ch = trf_Out_ch // tuple (meta, trf_fq_1, trf_fq_2)
+        }
+        // if scrubber on
+        if (params.run_hrr){
+            out_ch = scrubber_Out_ch // tuple (meta, reads_clean_1, reads_clean_2)
+        }
+
+        // publish compressed clean reads
+        if (params.publish_clean_reads){
+            COMPRESS_READS(out_ch) // tuple(meta, reads_clean_1.gz, reads_clean_2.gz)
+        }
+        // remove unpaired sequences at the end of the process
+        
+
+    emit:
+        out_ch // tuple (meta, reads_1, reads_2)
 }
 
 def parse_mnf_meta(preprocessing_mnf) {

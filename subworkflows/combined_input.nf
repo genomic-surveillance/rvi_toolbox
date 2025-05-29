@@ -13,7 +13,7 @@
 // Function to get list of [ meta, fastq_1, fastq_2 ]
 def create_fastq_channels(LinkedHashMap row) {
     def meta = [:]
-    meta.ID = row.ID
+    meta.id = row.id
 
     def array = []
     // check short reads
