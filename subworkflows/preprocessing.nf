@@ -107,9 +107,9 @@ workflow PREPROCESSING {
         // publish compressed clean reads
         if (params.publish_clean_reads){
             if (params.compress_clean_reads){
-                COMPRESS_READS(out_ch, "pre_processed")
+                COMPRESS_READS(out_ch)
             } else {
-                RENAME_READS(out_ch, "pre_processed")
+                RENAME_READS(out_ch)
             }
         }
         // remove unpaired sequences at the end of the process
