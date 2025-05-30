@@ -3,7 +3,7 @@ include {FASTQ2FASTA} from "../modules/fastq2fasta.nf"
 include {TRF} from "../modules/trf.nf"
 include {RMREPEATFROMFASTQ} from "../modules/rmRepeatFromFq.nf"
 include {SRA_HUMAN_SCRUBBER} from "../modules/scrubber.nf"
-include {COMPRESS_READS} from "../modules/helper_processes.nf"
+include {COMPRESS_READS; RENAME_READS} from "../modules/helper_processes.nf"
 include {SEQTK_MERGEPE; SEQTK_SPLIT} from "../modules/seqtk.nf"
 
 workflow PREPROCESSING {
@@ -106,10 +106,13 @@ workflow PREPROCESSING {
 
         // publish compressed clean reads
         if (params.publish_clean_reads){
-            COMPRESS_READS(out_ch) // tuple(meta, reads_clean_1.gz, reads_clean_2.gz)
+            if (params.compress_clean_reads){
+                COMPRESS_READS(out_ch)
+            } else {
+                RENAME_READS(out_ch)
+            }
         }
         // remove unpaired sequences at the end of the process
-        
 
     emit:
         out_ch // tuple (meta, reads_1, reads_2)

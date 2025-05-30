@@ -8,6 +8,8 @@ process TRF {
 
     container "quay.io/biocontainers/trf:4.09.1--h031d066_6"
 
+    publishDir enabled: params.debug_preproc_output, mode: 'copy', failOnError: true, pattern: "*.trf", path: "${params.results_dir}/${meta.id}/preprocessing/"
+
     input:
     tuple val(meta), path(fasta_R1), path(fasta_R2)
 
