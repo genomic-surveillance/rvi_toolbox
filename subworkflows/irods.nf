@@ -58,7 +58,7 @@ workflow QUERY_IRODS_METADATA {
 
         JSON_PARSE.out.json_file
         .filter{ it.text.contains('"attribute": "alignment"') }
-        .splitJson(path: "result")
+        .splitJson(path: "result.multiple")
         .map{irods_item ->
             metamap = [:]
             metamap = set_metadata(irods_item.collection, irods_item.data_object, irods_item.avus)
