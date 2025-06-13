@@ -69,7 +69,7 @@ process JSON_PARSE {
     script:
     //format is dodgy when it comes off of IRODS so second JQ fixes the formatting
     """
-    jq '.result[] | .collection + "/" + .data_object' ${lane_file}
+    jq '.result.multiple[] | .collection + "/" + .data_object' ${lane_file}
     jq -r '' ${lane_file} > irods_paths.json
     """
 }
