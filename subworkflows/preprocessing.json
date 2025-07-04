@@ -5,6 +5,18 @@
             "publish_clean_reads": {
                 "default": "true",
                 "help_text": "should the pre-processed reads be saved (gzip-compressed) in the preprocessing/ output folder."
+            },
+            "debug_preproc_output": {
+                "default": "false",
+                "help_text": "Enable publishing of intermediate output for pre-processing."
+            },
+            "compress_clean_reads": {
+                "default": "false",
+                "help_text": "Compress the clean reads files using gzip."
+            },
+            "preprocessing_mnf": {
+                "default": "null",
+                "help_text": "(optional) input manifest file for running workflow in isolation."
             }
         },
         "Trimmomatic Options": {
@@ -15,10 +27,6 @@
             "trimmomatic_threads": {
                 "default": "4",
                 "help_text": "Number of threads to use for Trimmomatic"
-            },
-            "publish_trimmed_reads": {
-                "default": "false",
-                "help_text": "Publish trimmed reads"
             },
             "adapter_fasta": {
                 "default": "/data/pam/software/trimmomatic/adapter_fasta/solexa-with-nextseqPR-adapters.fasta",
