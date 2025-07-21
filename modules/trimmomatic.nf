@@ -1,6 +1,5 @@
 // REQUIRED
-//params.adapter_fasta = null // SHOULD NOT BE NULL
-params.adapter_fasta = "/data/pam/software/trimmomatic/adapter_fasta/solexa-with-nextseqPR-adapters.fasta"
+params.adapter_fasta = "/lustre/scratch126/gsu/rvidata/pipeline_resources/files/solexa-with-nextseqPR-adapters.fasta"
 params.trimmomatic_options = "ILLUMINACLIP:${params.adapter_fasta}:2:10:7:1 CROP:151 SLIDINGWINDOW:4:20 MINLEN:70"
 params.trimmomatic_threads = 4
 
