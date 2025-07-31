@@ -18,7 +18,20 @@ process TRF {
 
     script:
     """
-    trf ${fasta_R1} ${params.trf_cli_options} > ${meta.id}_1.trf
-    trf ${fasta_R2} ${params.trf_cli_options} > ${meta.id}_2.trf
+    # Handle R1 file
+    if [ -f "$fasta_R1" ] && [ ! -s "$fasta_R1" ]; then
+        echo "R1 file exists but is empty, writing empty output..."
+        touch "${meta.id}_1.trf"
+    else
+        trf ${fasta_R1} ${params.trf_cli_options} > ${meta.id}_1.trf
+    fi
+
+    # Handle R2 file
+    if [ -f "$fasta_R2" ] && [ ! -s "$fasta_R2" ]; then
+        echo "R2 file exists but is empty, writing empty output..."
+        touch "${meta.id}_2.trf"
+    else
+        trf ${fasta_R2} ${params.trf_cli_options} > ${meta.id}_2.trf
+    fi
     """
 }
