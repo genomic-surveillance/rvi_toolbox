@@ -29,7 +29,7 @@
                 "help_text": "Number of threads to use for Trimmomatic"
             },
             "adapter_fasta": {
-                "default": "/data/pam/software/trimmomatic/adapter_fasta/solexa-with-nextseqPR-adapters.fasta",
+                "default": "null",
                 "help_text": "Path to adapter fasta file"
             },
             "trimmomatic_options": {
