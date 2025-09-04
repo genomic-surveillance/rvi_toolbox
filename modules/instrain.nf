@@ -95,6 +95,6 @@ process GENERATE_INSTRAIN_SUMMARY {
 
     script:
     """
-    ${projectDir}/bin/combine_instrain_output.sh "${params.custom_taxon_names_abundance_estimation}"
+    ${projectDir}/rvi_toolbox/bin/combine_instrain_output.sh "${params.custom_taxon_names_abundance_estimation}"
     """
 }
